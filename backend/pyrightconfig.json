@@ -2,6 +2,5 @@
   "venvPath": "backend",
   "venv": ".venv",
   "typeCheckingMode": "strict",
-  "reportGeneralTypeIssues": "none",
   "reportInvalidTypeVarUse": "none"
 }

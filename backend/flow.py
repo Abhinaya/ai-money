@@ -10,12 +10,6 @@ from agents.categorizer import CATEGORIES, BATCH_SIZE, CategorizationAgent
 router = APIRouter()
 session_store = SessionStore()
 
-def uncategorized_transactions(transactions):
-    if transactions is None:
-        transactions = store.load()
-    return [e for e in transactions
-            if isinstance(e, data.Transaction) and
-            any(p.account.startswith('Expenses:Uncategorized') for p in e.postings)]
 
 @router.websocket("/ws/workflow")
 async def workflow_socket(websocket: WebSocket):
@@ -33,7 +27,6 @@ async def workflow_socket(websocket: WebSocket):
             transactions=uncategorized_txns,
             current_batch=uncategorized_txns[:batch_size],
             batch_for_feedback=[],
-            summary_data={},
             plots=[],
             next_step="categorizer"
         )
@@ -62,7 +55,7 @@ async def workflow_socket(websocket: WebSocket):
             # Process categorization
             if state["next_step"] == "categorizer":
                 categorizer = CategorizationAgent()
-                updated_state = categorizer.process_batch(state)
+                updated_state = categorizer.process _batch(state)
                 session_store.update_session(session_id, updated_state)
 
                 if updated_state["next_step"] == "end":
@@ -78,7 +71,6 @@ async def workflow_socket(websocket: WebSocket):
                                 "total": len(all_transactions),
                                 "processed": len(all_transactions) - len(uncategorized_transactions(None)),
                             },
-                            "summary": state.get("summary_data", {})
                         }
                     })
                     state["next_step"] = "categorizer"
@@ -130,7 +122,6 @@ async def workflow_socket(websocket: WebSocket):
                         "total": len(all_transactions),
                         "processed": len(all_transactions) - len(uncategorized_transactions(None)),
                     },
-                    "summary": state.get("summary_data", {})
                 }
             })
 
@@ -139,7 +130,6 @@ async def workflow_socket(websocket: WebSocket):
                 await websocket.send_json({
                     "type": "COMPLETE",
                     "data": {
-                        "summary": state.get("summary_data", {}),
                         "progress": {
                             "total": len(all_transactions),
                             "processed": len(all_transactions) - len(uncategorized_transactions(None)),

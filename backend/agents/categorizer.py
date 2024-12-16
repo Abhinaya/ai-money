@@ -3,7 +3,6 @@ from langchain_core.messages import HumanMessage, SystemMessage
 import json
 from typing import List
 
-from accounting.transactions import update_expense_categories
 
 from accounting.catagory import CATEGORIES, BATCH_SIZE
 from agents.base import AgentState, TransactionForFeedback, get_llm
@@ -15,13 +14,7 @@ class CategorizationAgent:
 
     def process_batch(self, state: AgentState) -> AgentState:
         """Process a batch of transactions for categorization"""
-        # Use transactions from state if current_batch is empty
-        batch = state["current_batch"]
-        if not batch:
-            print("No transactions to process")
-            state["next_step"] = "end"
-            return state
-
+        batch = state.uncategorized_txns[:self.batch_size]
         messages = [
             SystemMessage(content=self._create_system_prompt(state)),
             HumanMessage(content=self._format_transactions_for_prompt(batch))
@@ -38,14 +31,9 @@ class CategorizationAgent:
                 if assessed_category not in CATEGORIES:
                     txn_categories[txn_id] = {"assessed_category": "Expenses:Uncategorized", "assessed_vendor": category_summary["assessed_vendor"]}
             self._create_categorization_summary(batch, txn_categories, state)
-            print("Setting next step as category_user_feedback")
-            state["next_step"] = "category_user_feedback"
-            # Set next batch of transactions
-            current_position = state["transactions"].index(batch[-1])
-            state["current_batch"] = state["transactions"][current_position + 1:current_position + 1 + self.batch_size]
         except json.JSONDecodeError:
             print("JSONDecodeError")
-            state['next_step'] = 'end'
+            raise "Error while categorizing."
 
         return state
 
@@ -81,21 +69,17 @@ class CategorizationAgent:
         return formatted
 
     def _create_categorization_summary(self, transactions: List[Transaction], txn_categories: dict, state: AgentState):
-        txns_for_feeback: List[TransactionForFeedback] = []
-        txns_to_update: List[dict] = []
         print("txn_categories: ", txn_categories)
         for txn in transactions:
             txn_id = next(iter(txn.links))
             print("txn_id: ", txn_id, txn_categories.get(txn_id, None))
             if txn_categories[txn_id]["assessed_category"] == "Expenses:Uncategorized":
-                txns_for_feeback.append(TransactionForFeedback(
+                state.txns_to_get_feedback.append(TransactionForFeedback(
                     transaction=txn,
                     assessed_category=txn_categories[txn_id]["assessed_category"],
                     assessed_vendor=txn_categories[txn_id]["assessed_vendor"],
                 ))
             else:
-                txns_to_update.append({"id": txn_id,
+                state.txns_to_update.append({"id": txn_id,
                     "rectified_category":  txn_categories[txn_id]["assessed_category"],
                     "rectified_vendor": txn_categories[txn_id]["assessed_vendor"]})
-        update_expense_categories(txns_to_update)
-        state['batch_for_feedback'] = txns_for_feeback

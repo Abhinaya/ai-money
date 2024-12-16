@@ -1,7 +1,9 @@
-from beancount.loader import load_file
 from beancount.core import data
-from pandas.core.indexes.interval import lt
 from .store import FILENAME, load, persist
+from beancount.core import data
+
+from .store import FILENAME, load, persist
+
 
 def update_transactions(txns_to_update, beancount_filepath=FILENAME):
     """

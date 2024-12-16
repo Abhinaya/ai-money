@@ -11,6 +11,6 @@ CATEGORIES = [
     "Expenses:Subscriptions",
     "Expenses:Uncategorized",
     "Expenses:Misc",
-];
+]
 
-BATCH_SIZE = 10;
+BATCH_SIZE = 10

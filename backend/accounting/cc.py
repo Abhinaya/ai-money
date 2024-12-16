@@ -1,9 +1,12 @@
-from .accounts import create_transaction
+from datetime import datetime
+
 import pandas as pd
 from beancount.core import data
 from beancount.core.amount import Amount
 from beancount.core.number import D
-from datetime import datetime
+
+from .accounts import create_transaction
+
 
 def convert_fidelity_cc_to_beancount(df):
     transactions = []

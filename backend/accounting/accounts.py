@@ -1,9 +1,10 @@
-from beancount.core import data
-from datetime import datetime
 import zlib
-import base64
+from datetime import datetime
+
+from beancount.core import data
 
 from .catagory import CATEGORIES
+
 
 def create_link_id(date, amount, narration):
     date_str = date.strftime("%Y%m%d")

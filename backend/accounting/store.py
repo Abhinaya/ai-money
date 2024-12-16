@@ -1,6 +1,5 @@
-from beancount.parser import printer
 from beancount import loader
-from beancount.core import data
+from beancount.parser import printer
 
 FILENAME = 'transactions.beancount'
 
