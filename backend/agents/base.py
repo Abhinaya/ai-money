@@ -1,13 +1,16 @@
+import asyncio
 from dataclasses import dataclass, field
 from enum import Enum
-from typing import TypedDict, Sequence
+from typing import Sequence
+
 from beancount.core.data import Transaction
+from fastapi import WebSocket
 from langchain_anthropic.chat_models import ChatAnthropic
-from langgraph.graph.state import Literal
 from langchain_core.messages import BaseMessage
 
 from accounting import store
 from accounting.transactions import update_expense_categories
+
 
 @dataclass
 class TransactionForFeedback:
@@ -33,6 +36,7 @@ class AgentState:
     txns_to_update: list[dict] = field(default_factory=list)
     txns_to_get_feedback: list[TransactionForFeedback] = field(default_factory=list)
     next_step: Step = None
+    websocket: WebSocket = None
 
     def refresh_transactions(self):
         self.all_txns = store.load()
@@ -40,14 +44,24 @@ class AgentState:
                                            if isinstance(e, Transaction) and
                                            any(p.account.startswith('Expenses:Uncategorized') for p in e.postings)]
         self.txns_to_update = []
-        self.txns_to_get_feedback = []
         print("Done refresh_transactions")
         print(self)
 
-    def flush_to_store(self):
+    async def flush_to_store(self):
         update_expense_categories(self.txns_to_update)
         self.refresh_transactions()
         print("Done flush_to_store")
+        await self.websocket.send_json({
+            "type": "STATE_UPDATE",
+            "data": {
+                "current_step": self.next_step.value,
+                "progress": {
+                    "total": len(self.all_txns),
+                    "processed": len(self.all_txns) - len(self.uncategorized_txns),
+                },
+            }
+        })
+        await asyncio.sleep(2)
         print(self)
 
 

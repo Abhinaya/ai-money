@@ -12,9 +12,17 @@ class CategorizationAgent:
         self.llm = get_llm()
         self.batch_size = BATCH_SIZE
 
-    def process_batch(self, state: AgentState) -> AgentState:
-        """Process a batch of transactions for categorization"""
-        batch = state.uncategorized_txns[:self.batch_size]
+    async def process_batch(self, state: AgentState) -> AgentState:
+        while state.uncategorized_txns:
+            batch = state.uncategorized_txns[:self.batch_size]
+            await self.categorize_this_batch(batch, state)
+            if state.txns_to_get_feedback:
+                print("CategorizationAgent.process_batch: To get user feedback ")
+                return state
+        print("CategorizationAgent.process_batch: Done")
+        return state
+
+    async def categorize_this_batch(self, batch, state):
         messages = [
             SystemMessage(content=self._create_system_prompt(state)),
             HumanMessage(content=self._format_transactions_for_prompt(batch))
@@ -29,12 +37,13 @@ class CategorizationAgent:
                 assessed_category = category_summary["assessed_category"]
                 print("assessed_category: ", assessed_category)
                 if assessed_category not in CATEGORIES:
-                    txn_categories[txn_id] = {"assessed_category": "Expenses:Uncategorized", "assessed_vendor": category_summary["assessed_vendor"]}
+                    txn_categories[txn_id] = {"assessed_category": "Expenses:Uncategorized",
+                                              "assessed_vendor": category_summary["assessed_vendor"]}
             self._create_categorization_summary(batch, txn_categories, state)
+            await state.flush_to_store()
         except json.JSONDecodeError:
             print("JSONDecodeError")
             raise "Error while categorizing."
-
         return state
 
     def _create_system_prompt(self, state: AgentState) -> str:

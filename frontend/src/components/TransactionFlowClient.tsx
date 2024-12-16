@@ -49,13 +49,15 @@ export function TransactionFlowClient() {
       )}
 
       {currentState && currentState === "completed" && (
-        <div className="">
-          <h3 className="text-lg"> Categorization is complete </h3>
+        <div className="place-items-center">
+          <h3 className="text-2xl text-green-700 font-extrabold">
+            Categorization is complete 🎉
+          </h3>
         </div>
       )}
 
       {progress && (
-        <div>
+        <div className="pt-5">
           <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
             <div
               className="bg-green-400 h-4 rounded-full transition-all duration-500"
@@ -64,7 +66,7 @@ export function TransactionFlowClient() {
               }}
             ></div>
           </div>{" "}
-          <div className="text-sky-600 font-bold">
+          <div className="text-sky-600 font-bold pt-5">
             All transactions: {progress.total} | Categorized transactions:{" "}
             {progress.processed}
           </div>

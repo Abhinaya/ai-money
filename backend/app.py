@@ -1,7 +1,7 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from flow import router as flow_router
+from uiflow import router as flow_router
 from session import SessionStore
 
 app = FastAPI()
