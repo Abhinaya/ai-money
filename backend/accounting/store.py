@@ -1,5 +1,6 @@
 from beancount import loader
 from beancount.parser import printer
+import os
 
 FILENAME = 'transactions.beancount'
 
@@ -11,17 +12,27 @@ def first_link(entry):
     return ""
 
 def persist(entries, filename=FILENAME):
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.abspath(os.path.join(root_dir, os.pardir))
+
+    file_path = os.path.join(root_dir, filename)
     entries.sort(key=first_link)
-    with open(filename, 'w') as f:
+
+    with open(file_path, 'w') as f:
         for entry in entries:
             f.write(printer.format_entry(entry))
             f.write('\n\n')
-    print(f"Beancount transactions have been written to {filename}")
+
+    print(f"Entries have been saved to {file_path}")
     print(f"It has {len(load())} entries")
 
-
 def load(filename=FILENAME):
-    entries, errors, _ = loader.load_file(filename)
+    root_dir = os.path.dirname(os.path.abspath(__file__))
+    root_dir = os.path.abspath(os.path.join(root_dir, os.pardir))
+
+    file_path = os.path.join(root_dir, filename)
+
+    entries, errors, _ = loader.load_file(file_path)
     if errors:
         raise ValueError(f"Error loading beancount file: {errors}")
     return entries

@@ -30,6 +30,7 @@ def create_workflow() -> CompiledGraph:
 
     workflow.add_conditional_edges(Step.ORCHESTRATE.value, router, None, None)
     workflow.add_edge(Step.CATEGORIZE.value, Step.ORCHESTRATE.value)
+    workflow.add_edge(Step.GET_USER_FEEDBACK.value, Step.ORCHESTRATE.value)
 
     workflow.set_entry_point(Step.ORCHESTRATE.value)
     workflow.set_finish_point(Step.END.value)

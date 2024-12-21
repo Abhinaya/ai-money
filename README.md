@@ -27,8 +27,7 @@ Install
 ### Run
 
 **Transactions beancount setup**
-- You need a `transactions.beancount` file. This is a sample script `backend/scripts/convert_cc_to_beancount.py`. It converts credit card transacions
-to beancount file. Write your own scripts to suit your statements.
+- You need a `transactions.beancount` file. This is a sample script `backend/scripts/convert_cc_to_beancount.py`. It converts sample credit card transacions in `./backend/scripts/statements/` to beancount file. Write your own scripts to suit your statements.
 
 **Backend**
 - Start the backend with
@@ -46,18 +45,6 @@ npm run dev
 ```
 
 And visit localhost:3000
-
-
-We have downloaded credit card transactions as csv from Fidelity and Amex.
-We use python based plain text accounting tool "beancount".
-This tool can store and mange transactions in plain text account format.
-It's plain text file and readable. Check `transaction.beancount`
-- We have created `transaction.beancount` with main.py
-- You can recreate transaction.beancount file from cc transactions csv files with `poetry run python main.py`
-
-The bot loads the transactions from beancount file and processes.
-To launch the bot
-- poetry run streamlit app.py
 
 
 ### Dashboard
