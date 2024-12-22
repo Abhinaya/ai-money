@@ -2,7 +2,7 @@
 
 import { useAgentWorkflow } from "@/hooks/useAgentworkflow";
 import { Button } from "@/components/ui/button";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import {
   Table,
   TableBody,
@@ -14,6 +14,10 @@ import {
 
 export function TransactionFlowClient() {
   const [isMounted, setIsMounted] = useState(false);
+  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [beancountFilepath, setBeancountFilepath] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
   const {
     isConnected,
     currentState,
@@ -25,6 +29,34 @@ export function TransactionFlowClient() {
     rectifyTransaction,
     initializeConnection,
   } = useAgentWorkflow();
+
+  const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const files = event.target.files;
+    if (!files) return;
+    const file = files[0];
+    if (!file) return;
+
+    const formData = new FormData();
+    formData.append("file", file);
+
+    try {
+      const response = await fetch("http://localhost:8000/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error("File upload failed");
+      }
+
+      const data = await response.json();
+      setUploadMessage(data.message);
+      setBeancountFilepath(data.beancount_filepath);
+    } catch (error) {
+      console.error("Error uploading file:", error);
+      setUploadMessage("Error uploading file");
+    }
+  };
 
   useEffect(() => {
     setIsMounted(true);
@@ -38,6 +70,30 @@ export function TransactionFlowClient() {
   return (
     <div className="p-4">
       <h1 className="text-xl font-bold pb-10">Categorize my transactions</h1>
+
+      <div className="mb-4">
+        <input
+          type="file"
+          ref={fileInputRef}
+          onChange={handleFileUpload}
+          className="hidden"
+        />
+        <button
+          onClick={() => fileInputRef.current && fileInputRef.current.click()}
+          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        >
+          Upload Statement CSV
+        </button>
+      </div>
+
+      {uploadMessage && (
+        <div className="mb-4">
+          <p className="text-green-600">{uploadMessage}</p>
+          {beancountFilepath && (
+            <p className="text-gray-600">Beancount Filepath: {beancountFilepath}</p>
+          )}
+        </div>
+      )}
 
       {!isConnected && currentState !== "completed" && (
         <button

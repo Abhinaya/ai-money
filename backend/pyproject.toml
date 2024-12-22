@@ -28,6 +28,7 @@ sentence-transformers = "*"
 pymilvus = "^2.4.9"
 fastapi = "^0.115.5"
 uvicorn = { extras = ["standard"], version = "^0.32.1" }
+python-multipart = "^0.0.20"
 
 
 [build-system]

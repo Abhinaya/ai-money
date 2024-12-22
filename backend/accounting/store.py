@@ -11,28 +11,28 @@ def first_link(entry):
         return sorted(links)[0]
     return ""
 
-def persist(entries, filename=FILENAME):
-    root_dir = os.path.dirname(os.path.abspath(__file__))
-    root_dir = os.path.abspath(os.path.join(root_dir, os.pardir))
+def persist(entries, filepath=FILENAME):
+    # root_dir = os.path.dirname(os.path.abspath(__file__))
+    # root_dir = os.path.abspath(os.path.join(root_dir, os.pardir))
 
-    file_path = os.path.join(root_dir, filename)
+    # file_path = os.path.join(root_dir, filename)
     entries.sort(key=first_link)
 
-    with open(file_path, 'w') as f:
+    with open(filepath, 'w') as f:
         for entry in entries:
             f.write(printer.format_entry(entry))
             f.write('\n\n')
 
-    print(f"Entries have been saved to {file_path}")
+    print(f"Entries have been saved to {filepath}")
     print(f"It has {len(load())} entries")
 
-def load(filename=FILENAME):
-    root_dir = os.path.dirname(os.path.abspath(__file__))
-    root_dir = os.path.abspath(os.path.join(root_dir, os.pardir))
+def load(filepath=FILENAME):
+    # root_dir = os.path.dirname(os.path.abspath(__file__))
+    # root_dir = os.path.abspath(os.path.join(root_dir, os.pardir))
 
-    file_path = os.path.join(root_dir, filename)
+    # file_path = os.path.join(root_dir, filename)
 
-    entries, errors, _ = loader.load_file(file_path)
+    entries, errors, _ = loader.load_file(filepath)
     if errors:
         raise ValueError(f"Error loading beancount file: {errors}")
     return entries
