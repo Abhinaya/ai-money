@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Navigation from "@/components/Navigation";
+
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -31,6 +33,7 @@ export default function RootLayout({
         <h1 className="mb-50 text-2xl text-green-900 font-bold p-4">
           AI Money
         </h1>
+        <Navigation />
         {children}
       </body>
     </html>

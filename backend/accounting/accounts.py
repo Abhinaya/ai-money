@@ -15,7 +15,7 @@ def create_link_id(date, amount, narration):
         narration_hash = "empty"
     return f"{date_str}-{amount_str}-{narration_hash}"
 
-def create_transaction(date, payee, narration, postings, tags=set()):
+def create_transaction(date, payee, narration, postings, tags=set()) -> data.Transaction:
     amount = abs(postings[0].units.number)
     link_id = create_link_id(date, amount, narration)
     return data.Transaction(

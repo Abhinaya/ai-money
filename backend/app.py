@@ -2,12 +2,14 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from uiflow import router as flow_router
+from transactions_api import router as transactions_router
 from session import SessionStore
 
 app = FastAPI()
 session_store = SessionStore()
 
 app.include_router(flow_router)
+app.include_router(transactions_router)
 
 app.add_middleware(
     CORSMiddleware,
