@@ -9,6 +9,7 @@ from datetime import datetime
 import pandas as pd
 from fastapi import UploadFile
 import os
+import traceback
 
 router = APIRouter()
 
@@ -53,6 +54,7 @@ async def get_transactions(beancount_filepath: str):
 
         return transactions
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/api/transactions")
@@ -81,7 +83,7 @@ async def upload_file(file: UploadFile):
         beancount_txns = convert_fidelity_cc_to_beancount(sample_txns)
         all_entries = account_directives + beancount_txns
         beancount_filepath = f"/tmp/transactions_{timestamp}.beancount"
-        store.persist(all_entries)
+        store.persist(all_entries, beancount_filepath)
         return {"beancount_filepath": beancount_filepath, "message": f"File uploaded successfully as {filename}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

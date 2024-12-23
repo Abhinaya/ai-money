@@ -30,8 +30,8 @@ export function useAgentWorkflow() {
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const initializeConnection = useCallback(() => {
-    const ws = new WebSocket("ws://localhost:8000/ws/workflow");
+  const initializeConnection = useCallback((beancount_filepath: string) => {
+    const ws = new WebSocket(`ws://localhost:8000/ws/workflow?beancount_filepath=${encodeURIComponent(beancount_filepath)}`);
 
     ws.onopen = () => {
       setIsConnected(true);
@@ -110,10 +110,10 @@ export function useAgentWorkflow() {
       pendingTransactions.map((t: Transaction) =>
         t.id === transaction.id
           ? {
-              ...t,
-              rectified_category: transaction.rectified_category,
-              rectified_vendor: transaction.rectified_vendor,
-            }
+            ...t,
+            rectified_category: transaction.rectified_category,
+            rectified_vendor: transaction.rectified_vendor,
+          }
           : t,
       ),
     );

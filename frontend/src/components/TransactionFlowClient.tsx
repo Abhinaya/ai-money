@@ -11,6 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
+import TransactionsPage from "@/app/txns/page";
 
 export function TransactionFlowClient() {
   const [isMounted, setIsMounted] = useState(false);
@@ -89,48 +90,55 @@ export function TransactionFlowClient() {
       {uploadMessage && (
         <div className="mb-4">
           <p className="text-green-600">{uploadMessage}</p>
-          {beancountFilepath && (
-            <p className="text-gray-600">Beancount Filepath: {beancountFilepath}</p>
-          )}
         </div>
       )}
 
-      {!isConnected && currentState !== "completed" && (
-        <button
-          onClick={initializeConnection}
-          className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Start Processing
-        </button>
-      )}
-
-      {currentState && currentState === "completed" && (
-        <div className="place-items-center">
-          <h3 className="text-2xl text-green-700 font-extrabold">
-            Categorization is complete 🎉
-          </h3>
-        </div>
-      )}
-
-      {progress && (
-        <div className="pt-5">
-          <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
-            <div
-              className="bg-green-400 h-4 rounded-full transition-all duration-500"
-              style={{
-                width: `${(progress.processed / progress.total) * 100}%`,
-              }}
-            ></div>
-          </div>{" "}
-          <div className="text-sky-600 font-bold pt-5">
-            All transactions: {progress.total} | Categorized transactions:{" "}
-            {progress.processed}
+      {beancountFilepath && (
+        <div className="mb-4">
+          <p className="text-gray-600">Beancount Filepath: {beancountFilepath}</p>
+          <div className="text-xs font-mono float-right">
+            Connection Status: {isConnected ? "Connected" : "Disconnected"}
           </div>
+          {!isConnected && currentState !== "completed" && (
+            <button
+              onClick={() => beancountFilepath && initializeConnection(beancountFilepath)}
+              className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Start Processing
+            </button>
+          )}
+          {currentState && currentState === "completed" && (
+            <div className="place-items-center">
+              <h3 className="text-2xl text-green-700 font-extrabold">
+                Categorization is complete 🎉
+              </h3>
+            </div>
+          )}
+          {progress && (
+            <div className="pt-5">
+              <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
+                <div
+                  className="bg-green-400 h-4 rounded-full transition-all duration-500"
+                  style={{
+                    width: `${(progress.processed / progress.total) * 100}%`,
+                  }}
+                ></div>
+              </div>{" "}
+              <div className="text-sky-600 font-bold pt-5">
+                All transactions: {progress.total} | Categorized transactions:{" "}
+                {progress.processed}
+              </div>
+            </div>
+          )}
+          <TransactionsPage beancount_filepath={beancountFilepath} />
         </div>
       )}
-      <div className="text-xs font-mono float-right">
-        Connection Status: {isConnected ? "Connected" : "Disconnected"}
-      </div>
+
+
+
+
+
+
       {isConnected && (
         <div className="space-y-4">
           {error && <div className="text-red-500">Error: {error}</div>}
