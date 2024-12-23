@@ -245,7 +245,7 @@ export function TransactionFlowClient() {
               )}
             </div>
           )}
-          <TransactionsPage beancount_filepath={beancountFilepath} />
+          {!isConnected && <TransactionsPage beancount_filepath={beancountFilepath} />}
         </div>
       )}
     </div>
