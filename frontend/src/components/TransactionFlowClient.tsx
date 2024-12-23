@@ -17,7 +17,7 @@ import { LoadingSpinner } from "./LoadingSpinner";
 
 export function TransactionFlowClient() {
   const [isMounted, setIsMounted] = useState(false);
-  const [uploadMessage, setUploadMessage] = useState<string | null>(null);
+  const [uploadErrorMessage, setuploadErrorMessage] = useState<string | null>(null);
   const [beancountFilepath, setBeancountFilepath] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -53,11 +53,10 @@ export function TransactionFlowClient() {
       }
 
       const data = await response.json();
-      setUploadMessage(data.message);
       setBeancountFilepath(data.beancount_filepath);
     } catch (error) {
       console.error("Error uploading file:", error);
-      setUploadMessage("Error uploading file");
+      setuploadErrorMessage("Error uploading file");
     }
   };
 
@@ -72,32 +71,48 @@ export function TransactionFlowClient() {
 
   return (
     <div className="p-4">
-      <h1 className="text-xl font-bold pb-10">Categorize my transactions</h1>
-
-      <div className="mb-4">
-        <input
-          type="file"
-          ref={fileInputRef}
-          onChange={handleFileUpload}
-          className="hidden"
-        />
-        <button
-          onClick={() => fileInputRef.current && fileInputRef.current.click()}
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-        >
-          Upload Statement CSV
-        </button>
-      </div>
-
-      {uploadMessage && (
+      <input
+        type="file"
+        ref={fileInputRef}
+        onChange={handleFileUpload}
+        className="hidden"
+      />
+      {fileInputRef.current?.files?.[0] ? (
         <div className="mb-4">
-          <p className="text-green-600">{uploadMessage}</p>
+          <p className="text-sky-600 pb-5 pr-5 float-left">
+            Uploaded File: <span className="font-mono">{fileInputRef.current.files[0].name}</span>
+          </p>
+          {beancountFilepath && (
+            <p className="text-sky-600 pb-5 float-left">
+              Beancount Filepath: <span className="font-mono">{beancountFilepath}</span>
+            </p>
+          )}
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded ml-4"
+          >
+            Change
+          </button>
+        </div>
+      ) : (
+        <div>
+          <button
+            onClick={() => fileInputRef.current?.click()}
+            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+          >
+            Upload Statement
+          </button>
+        </div>
+      )}
+
+      {uploadErrorMessage && (
+        <div className="mb-4">
+          <p className="text-red-600">{uploadErrorMessage}</p>
         </div>
       )}
 
       {beancountFilepath && (
-        <div className="mb-4">
-          <p className="text-gray-600">Beancount Filepath: {beancountFilepath}</p>
+        <div className="mb-4 clear-both">
           <div className="text-xs font-mono float-right">
             Connection Status: {isConnected ? "Connected" : "Disconnected"}
             {isConnected && (
@@ -111,11 +126,11 @@ export function TransactionFlowClient() {
               onClick={() => beancountFilepath && initializeConnection(beancountFilepath)}
               className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
             >
-              Start Processing
+              Categorize Expenses
             </button>
           )}
-          {currentState && currentState === "completed" && (
-            <div className="place-items-center">
+          {currentState === "completed" && (
+            <div className="place-items-center pt-5">
               <h3 className="text-2xl text-green-700 font-extrabold">
                 Categorization is complete 🎉
               </h3>
