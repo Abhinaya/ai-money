@@ -68,9 +68,9 @@ def update_expense_category(id: str, exp_category: str):
             new_entries.append(entry)
     persist(new_entries, FILENAME)
 
-def update_expense_categories(updates: list[dict]):
+def update_expense_categories(updates: list[dict], beancount_filepath=FILENAME):
     print("update_expense_categories: ", updates)
-    entries = load(FILENAME)
+    entries = load(beancount_filepath)
     new_entries = []
     updated_ids = set()
     for entry in entries:
@@ -107,4 +107,4 @@ def update_expense_categories(updates: list[dict]):
     #     missing = set(u['id'] for u in updates) - updated_ids
     #     raise ValueError(f"Transactions with links {missing} not found")
 
-    persist(new_entries, FILENAME)
+    persist(new_entries, beancount_filepath)

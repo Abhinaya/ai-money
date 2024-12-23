@@ -98,6 +98,28 @@ export function TransactionFlowClient() {
           <p className="text-gray-600">Beancount Filepath: {beancountFilepath}</p>
           <div className="text-xs font-mono float-right">
             Connection Status: {isConnected ? "Connected" : "Disconnected"}
+            {isConnected && (
+              <svg
+                className="animate-spin h-5 w-5 text-green-500 inline ml-2"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+              >
+                <circle
+                  className="opacity-25"
+                  cx="12"
+                  cy="12"
+                  r="10"
+                  stroke="currentColor"
+                  strokeWidth="4"
+                ></circle>
+                <path
+                  className="opacity-75"
+                  fill="currentColor"
+                  d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+              </svg>
+            )}
           </div>
           {!isConnected && currentState !== "completed" && (
             <button
@@ -114,122 +136,116 @@ export function TransactionFlowClient() {
               </h3>
             </div>
           )}
-          {progress && (
-            <div className="pt-5">
+
+          {isConnected && (
+            <div className="pt-10">
               <div className="w-full bg-gray-200 rounded-full h-4 mb-2">
                 <div
-                  className="bg-green-400 h-4 rounded-full transition-all duration-500"
+                  className="bg-green-500 h-4 rounded-full transition-all duration-500"
                   style={{
-                    width: `${(progress.processed / progress.total) * 100}%`,
+                    width: progress ? `${(progress.processed / progress.total) * 100}%` : '0%',
                   }}
                 ></div>
-              </div>{" "}
-              <div className="text-sky-600 font-bold pt-5">
-                All transactions: {progress.total} | Categorized transactions:{" "}
-                {progress.processed}
               </div>
+              <div className="text-sky-600 font-bold pt-5">
+                All transactions: {progress ? progress.total : 'NA'} | Categorized transactions: {progress ? progress.processed : 'NA'}
+              </div>
+            </div>
+          )}
+          {isConnected && (
+            <div className="space-y-4">
+              {error && <div className="text-red-500">Error: {error}</div>}
+              {pendingTransactions.length > 0 && (
+                <div className="bg-white pb-5 rounded-lg shadow">
+                  <h2 className="text-lg font-semibold pt-5 mb-4">
+                    Review and update transaction categories
+                  </h2>
+                  <hr />
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead className="font-bold">Date</TableHead>
+                          <TableHead className="font-bold">Expense</TableHead>
+                          <TableHead className="font-bold">Amount</TableHead>
+                          <TableHead className="font-bold">
+                            Assessed Category
+                          </TableHead>
+                          <TableHead className="font-bold">
+                            Assessed Vendor
+                          </TableHead>
+                          <TableHead className="font-bold">
+                            Rectified Category
+                          </TableHead>
+                          <TableHead className="font-bold">
+                            Rectified Vendor
+                          </TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {pendingTransactions.map((txn) => (
+                          <TableRow key={txn.id}>
+                            <TableCell>{txn.date}</TableCell>
+                            <TableCell className="break-words max-w-[200px]">
+                              {txn.vendor}
+                            </TableCell>
+                            <TableCell>{txn.amount}</TableCell>
+                            <TableCell>{txn.assessed_category}</TableCell>
+                            <TableCell>{txn.assessed_vendor}</TableCell>
+                            <TableCell>
+                              <select
+                                id={`category-${txn.id}`}
+                                className="rounded-md border border-gray-300 p-2 text-sm w-full"
+                                value={txn.rectified_category}
+                                onChange={(e) => {
+                                  rectifyTransaction({
+                                    ...txn,
+                                    rectified_category: e.target.value,
+                                  });
+                                }}
+                              >
+                                <option value=""></option>
+                                {categories.map((category) => (
+                                  <option key={category} value={category}>
+                                    {category.replace("Expenses:", "")}
+                                  </option>
+                                ))}
+                              </select>
+                            </TableCell>
+                            <TableCell>
+                              <input
+                                id={`vendor-${txn.id}`}
+                                type="text"
+                                className="rounded-md border border-gray-300 p-2 text-sm w-full"
+                                defaultValue={
+                                  txn.rectified_vendor || txn.assessed_vendor
+                                }
+                                onChange={(e) => {
+                                  rectifyTransaction({
+                                    ...txn,
+                                    rectified_vendor: e.target.value,
+                                  });
+                                }}
+                              />
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </div>
+                  <div className="flex justify-end mt-6">
+                    <Button
+                      onClick={() => submitFeedback(pendingTransactions)}
+                      className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                    >
+                      Submit
+                    </Button>
+                  </div>
+                </div>
+              )}
             </div>
           )}
           <TransactionsPage beancount_filepath={beancountFilepath} />
-        </div>
-      )}
-
-
-
-
-
-
-      {isConnected && (
-        <div className="space-y-4">
-          {error && <div className="text-red-500">Error: {error}</div>}
-          {pendingTransactions.length > 0 && (
-            <div className="bg-white pb-5 rounded-lg shadow">
-              <h2 className="text-lg font-semibold pt-5 mb-4">
-                Review and update transaction categories
-              </h2>
-              <hr />
-              <div className="overflow-x-auto">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead className="font-bold">Date</TableHead>
-                      <TableHead className="font-bold">Expense</TableHead>
-                      <TableHead className="font-bold">Amount</TableHead>
-                      <TableHead className="font-bold">
-                        Assessed Category
-                      </TableHead>
-                      <TableHead className="font-bold">
-                        Assessed Vendor
-                      </TableHead>
-                      <TableHead className="font-bold">
-                        Rectified Category
-                      </TableHead>
-                      <TableHead className="font-bold">
-                        Rectified Vendor
-                      </TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {pendingTransactions.map((txn) => (
-                      <TableRow key={txn.id}>
-                        <TableCell>{txn.date}</TableCell>
-                        <TableCell className="break-words max-w-[200px]">
-                          {txn.vendor}
-                        </TableCell>
-                        <TableCell>{txn.amount}</TableCell>
-                        <TableCell>{txn.assessed_category}</TableCell>
-                        <TableCell>{txn.assessed_vendor}</TableCell>
-                        <TableCell>
-                          <select
-                            id={`category-${txn.id}`}
-                            className="rounded-md border border-gray-300 p-2 text-sm w-full"
-                            value={txn.rectified_category}
-                            onChange={(e) => {
-                              rectifyTransaction({
-                                ...txn,
-                                rectified_category: e.target.value,
-                              });
-                            }}
-                          >
-                            <option value=""></option>
-                            {categories.map((category) => (
-                              <option key={category} value={category}>
-                                {category.replace("Expenses:", "")}
-                              </option>
-                            ))}
-                          </select>
-                        </TableCell>
-                        <TableCell>
-                          <input
-                            id={`vendor-${txn.id}`}
-                            type="text"
-                            className="rounded-md border border-gray-300 p-2 text-sm w-full"
-                            defaultValue={
-                              txn.rectified_vendor || txn.assessed_vendor
-                            }
-                            onChange={(e) => {
-                              rectifyTransaction({
-                                ...txn,
-                                rectified_vendor: e.target.value,
-                              });
-                            }}
-                          />
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
-              <div className="flex justify-end mt-6">
-                <Button
-                  onClick={() => submitFeedback(pendingTransactions)}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Submit
-                </Button>
-              </div>
-            </div>
-          )}
         </div>
       )}
     </div>
