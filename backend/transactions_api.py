@@ -2,7 +2,14 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List, Dict
 from accounting.store import load, persist, first_link
+from accounting import store
+from accounting.cc import convert_fidelity_cc_to_beancount
+from accounting.accounts import account_directives
 from datetime import datetime
+import pandas as pd
+from fastapi import UploadFile
+import os
+import traceback
 
 router = APIRouter()
 
@@ -21,9 +28,9 @@ def format_amount(amount):
     return f"{amount.number}"
 
 @router.get("/api/transactions")
-async def get_transactions():
+async def get_transactions(beancount_filepath: str):
     try:
-        entries = load()
+        entries = load(beancount_filepath)
         transactions = []
 
         for entry in entries:
@@ -47,15 +54,26 @@ async def get_transactions():
 
         return transactions
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/api/transactions")
-async def create_transaction(transaction: Transaction):
+
+@router.post("/api/upload")
+async def upload_file(file: UploadFile):
     try:
-        entries = load()
-        # Convert transaction to beancount format and append
-        # Implementation needed here
-        persist(entries)
-        return {"message": "Transaction created successfully"}
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        os.makedirs("/tmp", exist_ok=True)
+        filename = f"/tmp/upload_{timestamp}.csv"
+
+        content = await file.read()
+        with open(filename, "wb") as f:
+            f.write(content)
+
+        sample_txns = pd.read_csv(filename)
+        beancount_txns = convert_fidelity_cc_to_beancount(sample_txns)
+        all_entries = account_directives + beancount_txns
+        beancount_filepath = f"/tmp/transactions_{timestamp}.beancount"
+        store.persist(all_entries, beancount_filepath)
+        return {"beancount_filepath": beancount_filepath, "message": f"File uploaded successfully as {filename}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

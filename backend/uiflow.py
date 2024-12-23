@@ -6,10 +6,10 @@ from agents.workflow import create_workflow
 router   = APIRouter()
 
 @router.websocket("/ws/workflow")
-async def workflow_socket(websocket: WebSocket):
+async def workflow_socket(websocket: WebSocket, beancount_filepath: str):
     await websocket.accept()
     try:
-        state = AgentState(websocket = websocket)
+        state = AgentState(websocket=websocket, beancount_filepath=beancount_filepath)
         wf = create_workflow()
         await wf.ainvoke(state, {"recursion_limit": 100})
     except WebSocketDisconnect:

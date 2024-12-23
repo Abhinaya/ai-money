@@ -19,19 +19,22 @@ interface Transaction {
   postings: Posting[];
 }
 
-export default function TransactionsPage() {
+export default function TransactionsPage({ beancount_filepath }: { beancount_filepath?: string }) {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [loading, setLoading] = useState(true);
-  const [isModalVisible, setIsModalVisible] = useState(false);
 
   useEffect(() => {
     fetchTransactions();
-  }, []);
+  }, [beancount_filepath]);
 
   const fetchTransactions = async () => {
     try {
       setLoading(true);
-      const response = await fetch("http://localhost:8000/api/transactions");
+      const url = new URL("http://localhost:8000/api/transactions");
+      if (beancount_filepath) {
+        url.searchParams.append("beancount_filepath", beancount_filepath);
+      }
+      const response = await fetch(url.toString());
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }

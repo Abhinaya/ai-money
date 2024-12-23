@@ -1,11 +1,11 @@
 from beancount.core import data
-from .store import FILENAME, load, persist
+from .store import load, persist
 from beancount.core import data
 
-from .store import FILENAME, load, persist
+from .store import load, persist
 
 
-def update_transactions(txns_to_update, beancount_filepath=FILENAME):
+def update_transactions(txns_to_update, beancount_filepath: str):
     """
     Update transactions in a beancount file based on input transactions.
 
@@ -46,8 +46,8 @@ def update_transactions(txns_to_update, beancount_filepath=FILENAME):
     except Exception as e:
         raise Exception(f"Error processing beancount file: {str(e)}")
 
-def update_expense_category(id: str, exp_category: str):
-    entries = load(FILENAME)
+def update_expense_category(id: str, exp_category: str, beancount_filepath: str):
+    entries = load(beancount_filepath)
     new_entries = []
     for entry in entries:
         if isinstance(entry, data.Transaction):
@@ -66,11 +66,11 @@ def update_expense_category(id: str, exp_category: str):
                 new_entries.append(entry)
         else:
             new_entries.append(entry)
-    persist(new_entries, FILENAME)
+    persist(new_entries, beancount_filepath)
 
-def update_expense_categories(updates: list[dict]):
+def update_expense_categories(updates: list[dict], beancount_filepath: str):
     print("update_expense_categories: ", updates)
-    entries = load(FILENAME)
+    entries = load(beancount_filepath)
     new_entries = []
     updated_ids = set()
     for entry in entries:
@@ -107,4 +107,4 @@ def update_expense_categories(updates: list[dict]):
     #     missing = set(u['id'] for u in updates) - updated_ids
     #     raise ValueError(f"Transactions with links {missing} not found")
 
-    persist(new_entries, FILENAME)
+    persist(new_entries, beancount_filepath)

@@ -29,6 +29,7 @@ class Step(Enum):
 
 @dataclass
 class AgentState:
+    beancount_filepath: str | None = None
     messages: Sequence[BaseMessage] = ()
     command: str = ""
     all_txns: list[Transaction] = field(default_factory=list)
@@ -39,7 +40,9 @@ class AgentState:
     websocket: WebSocket = None
 
     def refresh_transactions(self):
-        self.all_txns = store.load()
+        if not self.beancount_filepath:
+            raise ValueError("beancount_filepath not set")
+        self.all_txns = store.load(self.beancount_filepath)
         self.uncategorized_txns = [e for e in self.all_txns
                                            if isinstance(e, Transaction) and
                                            any(p.account.startswith('Expenses:Uncategorized') for p in e.postings)]
@@ -48,7 +51,7 @@ class AgentState:
         print(self)
 
     async def flush_to_store(self):
-        update_expense_categories(self.txns_to_update)
+        update_expense_categories(self.txns_to_update, self.beancount_filepath)
         self.refresh_transactions()
         print("Done flush_to_store")
         await self.websocket.send_json({
