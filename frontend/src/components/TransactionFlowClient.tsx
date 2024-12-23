@@ -12,7 +12,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import TransactionsPage from "@/app/txns/page";
+import TransactionsPage from "@/components/TransactionList";
 import { LoadingSpinner } from "./LoadingSpinner";
 
 export function TransactionFlowClient() {
@@ -87,21 +87,17 @@ export function TransactionFlowClient() {
               Beancount Filepath: <span className="font-mono">{beancountFilepath}</span>
             </p>
           )}
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded ml-4"
-          >
-            Change
-          </button>
         </div>
       ) : (
-        <div>
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Upload Statement
-          </button>
+        <div className="place-items-center">
+          <div>
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            >
+              Upload Statement
+            </button>
+          </div>
         </div>
       )}
 

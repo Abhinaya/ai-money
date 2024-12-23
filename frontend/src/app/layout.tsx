@@ -22,9 +22,7 @@ export default function RootLayout({
       <body
         className={`${customFont.className} antialiased`}
       >
-        <h1 className="mb-50 text-4xl text-blue-900 font-bold text-center p-7">
-          AI Money
-        </h1>
+
         <Navigation />
         {children}
       </body>

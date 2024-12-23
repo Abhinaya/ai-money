@@ -11,21 +11,10 @@ export default function Navigation() {
       <div className="flex gap-8">
         <Link
           href="/"
-          className={`text-l font-bold ${
-            pathname === "/" ? "text-white" : "text-gray-400 hover:text-white"
-          }`}
+          className={`text-2xl font-bold ${pathname === "/" ? "text-white" : "text-gray-400 hover:text-white"
+            }`}
         >
-          Home
-        </Link>
-        <Link
-          href="/txns"
-          className={`text-l font-bold ${
-            pathname === "/txns"
-              ? "text-white"
-              : "text-gray-400 hover:text-white"
-          }`}
-        >
-          Transactions
+          AI Money
         </Link>
       </div>
     </nav>
