@@ -57,16 +57,6 @@ async def get_transactions(beancount_filepath: str):
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))
 
-@router.post("/api/transactions")
-async def create_transaction(transaction: Transaction):
-    try:
-        entries = load()
-        # Convert transaction to beancount format and append
-        # Implementation needed here
-        persist(entries)
-        return {"message": "Transaction created successfully"}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
 
 @router.post("/api/upload")
 async def upload_file(file: UploadFile):

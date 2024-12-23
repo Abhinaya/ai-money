@@ -2,7 +2,6 @@ from beancount import loader
 from beancount.parser import printer
 import os
 
-FILENAME = 'transactions.beancount'
 
 def first_link(entry):
     """Retrieve the first link from the entry's links attribute, or return an empty string if links are missing or empty."""
@@ -11,11 +10,7 @@ def first_link(entry):
         return sorted(links)[0]
     return ""
 
-def persist(entries, filepath=FILENAME):
-    # root_dir = os.path.dirname(os.path.abspath(__file__))
-    # root_dir = os.path.abspath(os.path.join(root_dir, os.pardir))
-
-    # file_path = os.path.join(root_dir, filename)
+def persist(entries, filepath: str):
     entries.sort(key=first_link)
 
     with open(filepath, 'w') as f:
@@ -24,14 +19,9 @@ def persist(entries, filepath=FILENAME):
             f.write('\n\n')
 
     print(f"Entries have been saved to {filepath}")
-    print(f"It has {len(load())} entries")
+    print(f"It has {len(load(filepath))} entries")
 
-def load(filepath=FILENAME):
-    # root_dir = os.path.dirname(os.path.abspath(__file__))
-    # root_dir = os.path.abspath(os.path.join(root_dir, os.pardir))
-
-    # file_path = os.path.join(root_dir, filename)
-
+def load(filepath: str):
     entries, errors, _ = loader.load_file(filepath)
     if errors:
         raise ValueError(f"Error loading beancount file: {errors}")
