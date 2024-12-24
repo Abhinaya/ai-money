@@ -4,55 +4,11 @@ import { useState, useEffect } from "react";
 import { Table, message } from "antd";
 import { Bar } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import { Transaction } from "@/hooks/useAgentworkflow";
 Chart.register(CategoryScale, LinearScale, BarElement);
 
-interface Posting {
-    account: string;
-    amount: string;
-}
-
-interface Transaction {
-    id: string;
-    date: string;
-    payee: string;
-    narration: string;
-    from_account: string;
-    to_account: string;
-    amount: string;
-    postings: Posting[];
-}
-
-export default function TransactionsPage({ beancount_filepath }: { beancount_filepath?: string }) {
-    const [transactions, setTransactions] = useState<Transaction[]>([]);
-    const [categories, setCategories] = useState<string[]>([]);
-    const [loading, setLoading] = useState(true);
-
-    useEffect(() => {
-        fetchTransactions();
-    }, [beancount_filepath]);
-
-    const fetchTransactions = async () => {
-        try {
-            setLoading(true);
-            const url = new URL("http://localhost:8000/api/transactions");
-            if (beancount_filepath) {
-                url.searchParams.append("beancount_filepath", beancount_filepath);
-            }
-            const response = await fetch(url.toString());
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            const data = await response.json();
-            setTransactions(data.transactions);
-            setCategories(data.categories);
-        } catch (error) {
-            console.error("Error fetching transactions:", error);
-            message.error("Failed to load transactions");
-            setTransactions([]);
-        } finally {
-            setLoading(false);
-        }
-    };
+export default function TransactionsPage({ transactions, categories }: { transactions: Transaction[], categories: string[] }) {
+    const [loading, setLoading] = useState(false);
 
     const columns = [
         {

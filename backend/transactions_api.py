@@ -24,17 +24,6 @@ class Transaction(BaseModel):
     to_account: str  # Debit account
     links: List[str]
 
-
-@router.get("/api/transactions")
-async def get_transactions(beancount_filepath: str):
-    try:
-        transactions = load(beancount_filepath)
-        return {'categories': CATEGORIES, 'transactions': build_transaction_dicts(transactions)}
-    except Exception as e:
-        traceback.print_exc()
-        raise HTTPException(status_code=500, detail=str(e))
-
-
 @router.post("/api/upload")
 async def upload_file(file: UploadFile):
     try:
@@ -51,6 +40,7 @@ async def upload_file(file: UploadFile):
         all_entries = account_directives + beancount_txns
         beancount_filepath = f"/tmp/transactions_{timestamp}.beancount"
         store.persist(all_entries, beancount_filepath)
-        return {"beancount_filepath": beancount_filepath, "message": f"File uploaded successfully as {filename}"}
+        transactions = load(beancount_filepath)
+        return {"beancount_filepath": beancount_filepath, 'categories': CATEGORIES, 'transactions': build_transaction_dicts(transactions), "message": f"File uploaded successfully as {filename}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

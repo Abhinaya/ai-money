@@ -25,11 +25,14 @@ export function TransactionFlowClient() {
     currentState,
     progress,
     categories,
+    transactions,
     pendingTransactions,
     error,
     submitFeedback,
     rectifyTransaction,
     initializeConnection,
+    setCategories,
+    setTransactions
   } = useAgentWorkflow();
 
   const handleFileUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -53,6 +56,8 @@ export function TransactionFlowClient() {
 
       const data = await response.json();
       setBeancountFilepath(data.beancount_filepath);
+      setCategories(data.categories);
+      setTransactions(data.transactions);
     } catch (error) {
       console.error("Error uploading file:", error);
       setuploadErrorMessage("Error uploading file");
@@ -241,7 +246,7 @@ export function TransactionFlowClient() {
               )}
             </div>
           )}
-          {!isConnected && <TransactionsPage beancount_filepath={beancountFilepath} />}
+          <TransactionsPage categories={categories} transactions={transactions || []} />
         </div>
       )}
     </div>

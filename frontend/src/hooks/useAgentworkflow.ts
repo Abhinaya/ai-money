@@ -1,15 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 
-type WorkflowState = {
-  currentStep: string;
-  progress: {
-    total: number;
-    processed: number;
-  };
-  summary: any;
-};
-
-type Transaction = {
+export type TransactionForFeedback = {
   id: string;
   date: string;
   vendor: string;
@@ -20,15 +11,43 @@ type Transaction = {
   rectified_category: string;
 };
 
+type Posting = {
+  account: string;
+  amount: string;
+}
+
+export type Transaction = {
+  id: string;
+  date: string;
+  payee: string;
+  narration: string;
+  from_account: string;
+  to_account: string;
+  amount: string;
+  postings: Posting[];
+}
+
+
+type WorkflowState = {
+  currentStep: string;
+  progress: {
+    total: number;
+    processed: number;
+  };
+  summary: any;
+};
+
+
 export function useAgentWorkflow() {
   const [socket, setSocket] = useState<WebSocket | null>(null);
   const [state, setState] = useState<WorkflowState | null>(null);
-  const [pendingTransactions, setPendingTransactions] = useState<Transaction[]>(
+  const [pendingTransactions, setPendingTransactions] = useState<TransactionForFeedback[]>(
     [],
   );
   const [categories, setCategories] = useState<string[]>([]);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
 
   const initializeConnection = useCallback((beancount_filepath: string) => {
     const ws = new WebSocket(`ws://localhost:8000/ws/workflow?beancount_filepath=${encodeURIComponent(beancount_filepath)}`);
@@ -57,6 +76,8 @@ export function useAgentWorkflow() {
             progress: message.data.progress,
             session_id: message.data.session_id,
           }));
+          setTransactions(message.data.transactions);
+          setCategories(message.data.categories);
           break;
 
         case "FEEDBACK_REQUIRED":
@@ -90,7 +111,7 @@ export function useAgentWorkflow() {
   }, []);
 
   const submitFeedback = useCallback(
-    (transactions: Array<Transaction>) => {
+    (transactions: Array<TransactionForFeedback>) => {
       if (socket && isConnected) {
         socket.send(
           JSON.stringify({
@@ -104,10 +125,10 @@ export function useAgentWorkflow() {
     [socket, isConnected],
   );
 
-  const rectifyTransaction = (transaction: Transaction) => {
+  const rectifyTransaction = (transaction: TransactionForFeedback) => {
     if (!pendingTransactions) return;
     setPendingTransactions(
-      pendingTransactions.map((t: Transaction) =>
+      pendingTransactions.map((t: TransactionForFeedback) =>
         t.id === transaction.id
           ? {
             ...t,
@@ -125,10 +146,13 @@ export function useAgentWorkflow() {
     progress: state?.progress,
     summary: state?.summary,
     categories,
+    transactions,
     pendingTransactions,
     error,
     submitFeedback,
     rectifyTransaction,
     initializeConnection,
+    setCategories,
+    setTransactions
   };
 }
