@@ -1,7 +1,41 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Table, Button, message } from "antd";
+import { Table, message } from "antd";
+import { Bar } from 'react-chartjs-2';
+import { Chart, CategoryScale, LinearScale, BarElement } from 'chart.js';
+Chart.register(CategoryScale, LinearScale, BarElement);
+
+const categories = [
+    "Expenses:Restaurant",
+    "Expenses:Groceries",
+    "Expenses:Transport",
+    "Expenses:Utilities",
+    "Expenses:Shopping",
+    "Expenses:Entertainment",
+    "Expenses:Healthcare",
+    "Expenses:Housing",
+    "Expenses:Travel",
+    "Expenses:Subscriptions",
+    "Expenses:Misc",
+    "Expenses:Uncategorized"
+];
+
+const getTotalByCategory = (transactions: Transaction[]) => {
+    const totals: { [key: string]: number } = {};
+    categories.forEach(category => {
+        totals[category] = 0;
+    });
+
+    transactions.forEach(transaction => {
+        if (totals.hasOwnProperty(transaction.to_account)) {
+            totals[transaction.to_account] += parseFloat(transaction.amount);
+        }
+    });
+
+    return totals;
+};
+
 
 interface Posting {
     account: string;
@@ -78,27 +112,50 @@ export default function TransactionsPage({ beancount_filepath }: { beancount_fil
         },
         {
             title: "Amount",
-            dataIndex: "amount",
-            key: "amount",
+            dataIndex: "display_amount",
+            key: "display_amount",
             width: 300,
         },
     ];
+
+
+    const totals = getTotalByCategory(transactions);
+
+    const chart_data = {
+        labels: categories.map(category => category.replace("Expenses:", "")),
+        datasets: [
+            {
+                label: 'Total Value',
+                data: categories.map(category => totals[category]),
+                backgroundColor: 'rgba(75, 192, 192, 0.6)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1,
+            },
+        ],
+    };
 
     return (
         <div className="p-4">
             <div className="flex justify-between mb-4">
                 <h1 className="text-2xl font-bold">Transactions</h1>
             </div>
-
-            <Table
-                dataSource={transactions}
-                columns={columns}
-                rowKey="id"
-                loading={loading}
-                pagination={{ defaultPageSize: 10 }}
-                size="middle"
-                scroll={{ x: true }}
-            />
+            <div className="flex">
+                <div className="w-1/2 p-4">
+                    <Table
+                        dataSource={transactions}
+                        columns={columns}
+                        rowKey="id"
+                        loading={loading}
+                        pagination={{ defaultPageSize: 10 }}
+                        size="middle"
+                        scroll={{ x: true }}
+                    />
+                </div>
+                <div className="w-1/2 p-4">
+                    <h2 className="text-xl font-bold mb-4">Expenses by Category</h2>
+                    <Bar data={chart_data} />
+                </div>
+            </div>
         </div>
     );
 }

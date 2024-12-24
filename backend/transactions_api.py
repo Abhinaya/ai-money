@@ -44,11 +44,8 @@ async def get_transactions(beancount_filepath: str):
                     'narration': entry.narration,
                     'from_account': credit_posting.account,
                     'to_account': debit_posting.account,
-                    'amount': f"${abs(float(format_amount(credit_posting.units))):.2f}",
-                    'postings': [
-                        {'account': p.account, 'amount': str(p.units)}
-                        for p in entry.postings
-                    ],
+                    'amount': abs(float(format_amount(credit_posting.units))),
+                    'display_amount': f"${abs(float(format_amount(credit_posting.units))):.2f}",
                     'links': list(entry.links) if hasattr(entry, 'links') else []
                 })
 
