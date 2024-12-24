@@ -6,6 +6,7 @@ from accounting import store
 from accounting.catagory import CATEGORIES
 from accounting.cc import convert_fidelity_cc_to_beancount
 from accounting.accounts import account_directives
+from accounting.transactions import build_transaction_dicts
 from datetime import datetime
 import pandas as pd
 from fastapi import UploadFile
@@ -23,34 +24,12 @@ class Transaction(BaseModel):
     to_account: str  # Debit account
     links: List[str]
 
-def format_amount(amount):
-    if amount is None:
-        return "0.00"
-    return f"{amount.number}"
 
 @router.get("/api/transactions")
 async def get_transactions(beancount_filepath: str):
     try:
-        entries = load(beancount_filepath)
-        transactions = []
-
-        for entry in entries:
-            if hasattr(entry, 'postings'):
-                credit_posting = next((p for p in entry.postings if p.units and p.units.number < 0), None)
-                debit_posting = next((p for p in entry.postings if p.units and p.units.number > 0), None)
-                transactions.append({
-                    'id': first_link(entry),
-                    'date': str(entry.date),
-                    'payee': entry.payee,
-                    'narration': entry.narration,
-                    'from_account': credit_posting.account,
-                    'to_account': debit_posting.account,
-                    'amount': abs(float(format_amount(credit_posting.units))),
-                    'display_amount': f"${abs(float(format_amount(credit_posting.units))):.2f}",
-                    'links': list(entry.links) if hasattr(entry, 'links') else []
-                })
-
-        return {'categories': CATEGORIES, 'transactions': transactions}
+        transactions = load(beancount_filepath)
+        return {'categories': CATEGORIES, 'transactions': build_transaction_dicts(transactions)}
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

@@ -1,9 +1,8 @@
 from beancount.core import data
-from .store import load, persist
 from beancount.core import data
+from accounting.store import load, persist, first_link
 
-from .store import load, persist
-
+from typing import List
 
 def update_transactions(txns_to_update, beancount_filepath: str):
     """
@@ -108,3 +107,33 @@ def update_expense_categories(updates: list[dict], beancount_filepath: str):
     #     raise ValueError(f"Transactions with links {missing} not found")
 
     persist(new_entries, beancount_filepath)
+
+def format_amount(amount):
+    if amount is None:
+        return "0.00"
+    return f"{amount.number}"
+
+def transaction_to_dict(txn: data.Transaction):
+    if hasattr(txn, 'postings'):
+        credit_posting = next((p for p in txn.postings if p.units and p.units.number < 0), None)
+        debit_posting = next((p for p in txn.postings if p.units and p.units.number > 0), None)
+        return {
+            'id': first_link(txn),
+            'date': str(txn.date),
+            'payee': txn.payee,
+            'narration': txn.narration,
+            'from_account': credit_posting.account,
+            'to_account': debit_posting.account,
+            'amount': abs(float(format_amount(credit_posting.units))),
+            'display_amount': f"${abs(float(format_amount(credit_posting.units))):.2f}",
+            'links': list(txn.links) if hasattr(txn, 'links') else []
+        }
+
+
+def build_transaction_dicts(transactions: List[data.Transaction]):
+    transaction_dicts = []
+    for txn in transactions:
+        txn_dict = transaction_to_dict(txn)
+        if txn_dict:
+            transaction_dicts.append(txn_dict)
+    return transaction_dicts

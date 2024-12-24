@@ -9,7 +9,8 @@ from langchain_anthropic.chat_models import ChatAnthropic
 from langchain_core.messages import BaseMessage
 
 from accounting import store
-from accounting.transactions import update_expense_categories
+from accounting.catagory import CATEGORIES
+from accounting.transactions import update_expense_categories, build_transaction_dicts
 
 
 @dataclass
@@ -58,6 +59,8 @@ class AgentState:
             "type": "STATE_UPDATE",
             "data": {
                 "current_step": self.next_step.value,
+                "transactions":  build_transaction_dicts(self.all_txns),
+                "categories": CATEGORIES,
                 "progress": {
                     "total": len(self.all_txns),
                     "processed": len(self.all_txns) - len(self.uncategorized_txns),
