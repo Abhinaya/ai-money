@@ -13,7 +13,6 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import TransactionsPage from "@/components/TransactionList";
-import { LoadingSpinner } from "./LoadingSpinner";
 
 export function TransactionFlowClient() {
   const [isMounted, setIsMounted] = useState(false);
@@ -149,11 +148,11 @@ export function TransactionFlowClient() {
             </div>
           )}
           {isConnected && (
-            <div className="space-y-4">
+            <div className="space-y-4 p-5">
               {error && <div className="text-red-500">Error: {error}</div>}
               {pendingTransactions.length > 0 && (
                 <div className="bg-white pb-5 rounded-lg shadow">
-                  <h2 className="text-lg font-semibold pt-5 mb-4">
+                  <h2 className="text-lg font-semibold pt-5 mb-4 p-4">
                     Review and update transaction categories
                   </h2>
                   <hr />
@@ -193,6 +192,7 @@ export function TransactionFlowClient() {
                                 id={`category-${txn.id}`}
                                 className="rounded-md border border-gray-300 p-2 text-sm w-full"
                                 value={txn.rectified_category}
+                                required={true}
                                 onChange={(e) => {
                                   rectifyTransaction({
                                     ...txn,
@@ -229,7 +229,7 @@ export function TransactionFlowClient() {
                       </TableBody>
                     </Table>
                   </div>
-                  <div className="flex justify-end mt-6">
+                  <div className="flex justify-end mt-6 p-5">
                     <Button
                       onClick={() => submitFeedback(pendingTransactions)}
                       className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
