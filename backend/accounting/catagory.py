@@ -9,8 +9,8 @@ CATEGORIES = [
     "Expenses:Housing",
     "Expenses:Travel",
     "Expenses:Subscriptions",
-    "Expenses:Uncategorized",
     "Expenses:Misc",
+    "Expenses:Uncategorized",
 ]
 
 BATCH_SIZE = 10

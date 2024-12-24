@@ -3,6 +3,7 @@ from pydantic import BaseModel
 from typing import List, Dict
 from accounting.store import load, persist, first_link
 from accounting import store
+from accounting.catagory import CATEGORIES
 from accounting.cc import convert_fidelity_cc_to_beancount
 from accounting.accounts import account_directives
 from datetime import datetime
@@ -49,7 +50,7 @@ async def get_transactions(beancount_filepath: str):
                     'links': list(entry.links) if hasattr(entry, 'links') else []
                 })
 
-        return transactions
+        return {'categories': CATEGORIES, 'transactions': transactions}
     except Exception as e:
         traceback.print_exc()
         raise HTTPException(status_code=500, detail=str(e))

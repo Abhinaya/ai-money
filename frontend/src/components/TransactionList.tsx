@@ -6,37 +6,6 @@ import { Bar } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement } from 'chart.js';
 Chart.register(CategoryScale, LinearScale, BarElement);
 
-const categories = [
-    "Expenses:Restaurant",
-    "Expenses:Groceries",
-    "Expenses:Transport",
-    "Expenses:Utilities",
-    "Expenses:Shopping",
-    "Expenses:Entertainment",
-    "Expenses:Healthcare",
-    "Expenses:Housing",
-    "Expenses:Travel",
-    "Expenses:Subscriptions",
-    "Expenses:Misc",
-    "Expenses:Uncategorized"
-];
-
-const getTotalByCategory = (transactions: Transaction[]) => {
-    const totals: { [key: string]: number } = {};
-    categories.forEach(category => {
-        totals[category] = 0;
-    });
-
-    transactions.forEach(transaction => {
-        if (totals.hasOwnProperty(transaction.to_account)) {
-            totals[transaction.to_account] += parseFloat(transaction.amount);
-        }
-    });
-
-    return totals;
-};
-
-
 interface Posting {
     account: string;
     amount: string;
@@ -55,6 +24,7 @@ interface Transaction {
 
 export default function TransactionsPage({ beancount_filepath }: { beancount_filepath?: string }) {
     const [transactions, setTransactions] = useState<Transaction[]>([]);
+    const [categories, setCategories] = useState<string[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -73,7 +43,8 @@ export default function TransactionsPage({ beancount_filepath }: { beancount_fil
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
             const data = await response.json();
-            setTransactions(Array.isArray(data) ? data : []);
+            setTransactions(data.transactions);
+            setCategories(data.categories);
         } catch (error) {
             console.error("Error fetching transactions:", error);
             message.error("Failed to load transactions");
@@ -118,9 +89,21 @@ export default function TransactionsPage({ beancount_filepath }: { beancount_fil
         },
     ];
 
+    const getTotalByCategory = (transactions: Transaction[]) => {
+        const totals: { [key: string]: number } = {};
+        categories.forEach(category => {
+            totals[category] = 0;
+        });
 
+        transactions.forEach(transaction => {
+            if (totals.hasOwnProperty(transaction.to_account)) {
+                totals[transaction.to_account] += parseFloat(transaction.amount);
+            }
+        });
+
+        return totals;
+    };
     const totals = getTotalByCategory(transactions);
-
     const chart_data = {
         labels: categories.map(category => category.replace("Expenses:", "")),
         datasets: [
