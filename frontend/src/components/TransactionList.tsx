@@ -15,7 +15,7 @@ export default function TransactionsPage({ transactions, categories }: { transac
             title: "Date",
             dataIndex: "date",
             key: "date",
-            width: 120,
+            width: 150,
             sorter: (a: Transaction, b: Transaction) =>
                 new Date(a.date).getTime() - new Date(b.date).getTime(),
         },
@@ -75,11 +75,9 @@ export default function TransactionsPage({ transactions, categories }: { transac
 
     return (
         <div className="p-4">
-            <div className="flex justify-between mb-4">
-                <h1 className="text-2xl font-bold">Transactions</h1>
-            </div>
             <div className="flex">
-                <div className="w-1/2 p-4">
+                <div className="w-7/12 p-4">
+                    <h1 className="text-xl font-bold mb-4 p-3">Transactions</h1>
                     <Table
                         dataSource={transactions}
                         columns={columns}
@@ -90,8 +88,8 @@ export default function TransactionsPage({ transactions, categories }: { transac
                         scroll={{ x: true }}
                     />
                 </div>
-                <div className="w-1/2 p-4">
-                    <h2 className="text-xl font-bold mb-4">Expenses by Category</h2>
+                <div className="w-5/12 p-4">
+                    <h2 className="text-xl font-bold mb-4 p-3">Expenses by Category</h2>
                     <Bar data={chart_data} />
                 </div>
             </div>

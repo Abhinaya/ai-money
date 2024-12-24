@@ -92,7 +92,7 @@ export function TransactionFlowClient() {
         className="hidden"
       />
       {fileInputRef.current?.files?.[0] ? (
-        <div className="mb-4">
+        <div className="mb-4 text-xs">
           <p className="text-sky-600 pb-5 pr-5 float-left">
             Uploaded File: <span className="font-mono">{fileInputRef.current.files[0].name}</span>
           </p>
@@ -101,6 +101,14 @@ export function TransactionFlowClient() {
               Beancount Filepath: <span className="font-mono">{beancountFilepath}</span>
             </p>
           )}
+          <div className="text-xs font-mono float-right">
+            {isConnected ? "🟢 Connected" : "⚪ Disconnected"}
+            {isConnected && (
+              <div className="inline-block float-right pl-2">
+                <LoadingIcon width={14} height={14} className="text-green-500" />
+              </div>
+            )}
+          </div>
         </div>
       ) : (
         <div className="place-items-center">
@@ -123,14 +131,6 @@ export function TransactionFlowClient() {
 
       {beancountFilepath && (
         <div className="mb-4 clear-both">
-          <div className="text-xs font-mono float-right">
-            Connection Status: {isConnected ? "Connected" : "Disconnected"}
-            {isConnected && (
-              <div className="inline-block float-right pl-2">
-                <LoadingIcon width={14} height={14} className="text-green-500" />
-              </div>
-            )}
-          </div>
           {!isConnected && currentState !== "completed" && (
             <button
               onClick={() => beancountFilepath && initializeConnection(beancountFilepath)}
@@ -141,7 +141,7 @@ export function TransactionFlowClient() {
           )}
           {currentState === "completed" && (
             <div className="place-items-center pt-5">
-              <h3 className="text-2xl text-green-700 font-extrabold">
+              <h3 className="text-2xl text-green-500 font-extrabold">
                 Categorization is complete 🎉
               </h3>
             </div>
@@ -166,7 +166,9 @@ export function TransactionFlowClient() {
           <Modal open={isModalOpen} onOpenChange={setIsModalOpen}>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Review and update transaction categories</DialogTitle>
+                <DialogTitle>🤖 Review and update transaction categories</DialogTitle>
+                <p className="pb-3 text-m text-gray-600">
+                  Teach the AI agent! Provide categories to the agent for the following transactions </p>
               </DialogHeader>
               <hr />
               <div className="overflow-x-auto">
@@ -235,15 +237,17 @@ export function TransactionFlowClient() {
                 </Table>
               </div>
               <DialogFooter>
-                <Button
-                  onClick={() => {
-                    submitFeedback(pendingTransactions);
-                    handleCloseModal();
-                  }}
-                  className="bg-green-500 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
-                >
-                  Submit
-                </Button>
+                <div className="float-right pr-3">
+                  <Button
+                    onClick={() => {
+                      submitFeedback(pendingTransactions);
+                      handleCloseModal();
+                    }}
+                    className="bg-green-500 hover:bg-green-700 text-white font-bold p-4 rounded"
+                  >
+                    Submit
+                  </Button>
+                </div>
               </DialogFooter>
             </DialogContent>
           </Modal>

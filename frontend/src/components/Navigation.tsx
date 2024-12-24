@@ -14,7 +14,7 @@ export default function Navigation() {
           className={`text-2xl font-bold ${pathname === "/" ? "text-white" : "text-gray-400 hover:text-white"
             }`}
         >
-          AI Money
+          🤖 AI Money
         </Link>
       </div>
     </nav>
