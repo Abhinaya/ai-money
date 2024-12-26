@@ -28,21 +28,54 @@ Install
 ### Run
 
 **Backend**
-- Start the backend with
-```
+
+## To build and run the application:
+
+1. Install dependencies:
+```bash
 cd backend
 poetry shell
-ANTHROPIC_API_KEY=<your Anthropic API key>
-python -m uvicorn app:app --reload
+poetry install
+```
+
+2. Run the server:
+```bash
+ANTHROPIC_API_KEY=<your_key> poetry run uvicorn app:app --reload
+```
+
+## Build and run the application using Docker:
+
+Build the Docker image:
+```bash
+docker build -t ai-money-backend .
+```
+
+Test locally:
+```bash
+docker run -p 8000:8000 -e ANTHROPIC_API_KEY=your_key ai-money-backend
 ```
 
 **Frontend**
+
+## To build and run the application:
 ```
 cd frontend
 npm run dev
 ```
 
 And visit localhost:3000
+
+
+## Build and run the application using Docker:
+
+```bash
+# Build the Docker image
+docker build -t ai-money-frontend .
+
+# Run the container
+docker run -p 3000:3000 ai-money-frontend
+```
+
 
 **Sample CC statement**
 
