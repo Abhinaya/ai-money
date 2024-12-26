@@ -4,8 +4,11 @@ import { useState, useEffect } from "react";
 import { Table, message } from "antd";
 import { Bar } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement } from 'chart.js';
+import ChartDataLabels from 'chartjs-plugin-datalabels';
+Chart.register(CategoryScale, LinearScale, BarElement, ChartDataLabels);
+
+
 import { Transaction } from "@/hooks/useAgentworkflow";
-Chart.register(CategoryScale, LinearScale, BarElement);
 
 export default function TransactionsPage({ transactions, categories }: { transactions: Transaction[], categories: string[] }) {
     const [loading, setLoading] = useState(false);
@@ -72,6 +75,28 @@ export default function TransactionsPage({ transactions, categories }: { transac
             },
         ],
     };
+    const chart_options = {
+        responsive: true,
+        plugins: {
+            datalabels: {
+                anchor: 'end',
+                align: 'end',
+                formatter: (value) => `$${value.toFixed(2)}`,
+                font: {
+                    size: 11,
+                },
+            },
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                grace: '7%',
+                ticks: {
+                    callback: (value) => `$${value}`,
+                },
+            },
+        },
+    };
 
     return (
         <div className="p-4">
@@ -90,7 +115,7 @@ export default function TransactionsPage({ transactions, categories }: { transac
                 </div>
                 <div className="w-5/12 p-4">
                     <h2 className="text-xl font-bold mb-4 p-3">Expenses by Category</h2>
-                    <Bar data={chart_data} />
+                    <Bar data={chart_data} options={chart_options} className="pt-5" />
                 </div>
             </div>
         </div>

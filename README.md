@@ -1,6 +1,7 @@
 ## AI Money
 
 This is a personal finance expense tracker. This works on top of transactions in [beancount](https://beancount.github.io/) file format.
+The app converts an uploaded csv of credit card statement into a beacnount file and categorizes the expenses with an AI agent.
 
 ### Features
 - Categorize transactions using AI
@@ -26,9 +27,6 @@ Install
 
 ### Run
 
-**Transactions beancount setup**
-- You need a `transactions.beancount` file. This is a sample script `backend/scripts/convert_cc_to_beancount.py`. It converts sample credit card transacions in `./backend/scripts/statements/` to beancount file. Write your own scripts to suit your statements.
-
 **Backend**
 - Start the backend with
 ```
@@ -45,6 +43,10 @@ npm run dev
 ```
 
 And visit localhost:3000
+
+**Sample CC statement**
+
+A sample statement is available in backend/statements. Currently, the application supports only this statement format. To use this application, ensure your statements are converted to this CSV format.
 
 
 ### Dashboard
