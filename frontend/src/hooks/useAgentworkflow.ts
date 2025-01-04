@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 
 export type TransactionForFeedback = {
   id: string;
@@ -34,6 +34,7 @@ type WorkflowState = {
     total: number;
     processed: number;
   };
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   summary: any;
 };
 

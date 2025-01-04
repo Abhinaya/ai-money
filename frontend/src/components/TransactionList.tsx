@@ -1,7 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { Table, message } from "antd";
+import { Table } from "antd";
 import { Bar } from 'react-chartjs-2';
 import { Chart, CategoryScale, LinearScale, BarElement } from 'chart.js';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -11,7 +10,6 @@ Chart.register(CategoryScale, LinearScale, BarElement, ChartDataLabels);
 import { Transaction } from "@/hooks/useAgentworkflow";
 
 export default function TransactionsPage({ transactions, categories }: { transactions: Transaction[], categories: string[] }) {
-    const [loading, setLoading] = useState(false);
 
     const columns = [
         {
@@ -79,9 +77,9 @@ export default function TransactionsPage({ transactions, categories }: { transac
         responsive: true,
         plugins: {
             datalabels: {
-                anchor: 'end',
-                align: 'end',
-                formatter: (value) => `$${value.toFixed(2)}`,
+                anchor: "end" as const,
+                align: "end" as const,
+                formatter: (value: number) => `$${value.toFixed(2)}`,
                 font: {
                     size: 11,
                 },
@@ -92,7 +90,7 @@ export default function TransactionsPage({ transactions, categories }: { transac
                 beginAtZero: true,
                 grace: '7%',
                 ticks: {
-                    callback: (value) => `$${value}`,
+                    callback: (value: number) => `$${value}`,
                 },
             },
         },
@@ -107,7 +105,6 @@ export default function TransactionsPage({ transactions, categories }: { transac
                         dataSource={transactions}
                         columns={columns}
                         rowKey="id"
-                        loading={loading}
                         pagination={{ defaultPageSize: 10 }}
                         size="middle"
                         scroll={{ x: true }}

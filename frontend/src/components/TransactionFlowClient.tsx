@@ -30,7 +30,6 @@ export function TransactionFlowClient() {
     categories,
     transactions,
     pendingTransactions,
-    error,
     submitFeedback,
     rectifyTransaction,
     initializeConnection,
