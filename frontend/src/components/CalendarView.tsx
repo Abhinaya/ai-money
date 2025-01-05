@@ -29,16 +29,6 @@ interface Expense {
   category: string;
 }
 
-const demoExpenses: Expense[] = [
-  { date: '2024-03-18', amount: 93.66, category: 'Restaurant' },
-  { date: '2024-03-18', amount: 29.19, category: 'Restaurant' },
-  { date: '2024-03-15', amount: 81.00, category: 'Groceries' },
-  { date: '2024-03-15', amount: 17.42, category: 'Groceries' },
-  { date: '2024-03-13', amount: 80.23, category: 'Restaurant' },
-  { date: '2024-03-13', amount: 25.49, category: 'Shopping' },
-  { date: '2024-03-12', amount: 16.49, category: 'Groceries' },
-  { date: '2024-03-12', amount: 12.00, category: 'Transport' }
-];
 
 interface ExpenseCalendarProps {
   expenses?: Transaction[];
