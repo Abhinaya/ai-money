@@ -64,28 +64,31 @@ const SelectScrollDownButton = React.forwardRef<
 ));
 SelectScrollDownButton.displayName =
   SelectPrimitive.ScrollDownButton.displayName;
-const SelectContent = React.forwardRef(
-  ({ className, children, position = "popper", ...props }, ref) => (
-    <SelectPrimitive.Portal>
-      <SelectPrimitive.Content
-        ref={ref}
-        className={cn(
-          "absolute z-50 max-h-96 w-full overflow-auto rounded-md border bg-white text-black shadow-md",
-          className,
-        )}
-        side="bottom"
-        align="start"
-        sideOffset={4}
-        {...props}
-      >
-        <SelectScrollUpButton />
-        <SelectPrimitive.Viewport className="p-1">
-          {children}
-        </SelectPrimitive.Viewport>
-        <SelectScrollDownButton />
-      </SelectPrimitive.Content>
-    </SelectPrimitive.Portal>
-  ),
+
+const SelectContent = React.forwardRef<
+  React.ElementRef<typeof SelectPrimitive.Content>,
+  React.ComponentPropsWithoutRef<typeof SelectPrimitive.Content>
+>(({ className, children, ...props }, ref) => (
+  <SelectPrimitive.Portal>
+    <SelectPrimitive.Content
+      ref={ref}
+      className={cn(
+        "absolute z-50 max-h-96 w-full overflow-auto rounded-md border bg-white text-black shadow-md",
+        className,
+      )}
+      side="bottom"
+      align="start"
+      sideOffset={4}
+      {...props}
+    >
+      <SelectScrollUpButton />
+      <SelectPrimitive.Viewport className="p-1">
+        {children}
+      </SelectPrimitive.Viewport>
+      <SelectScrollDownButton />
+    </SelectPrimitive.Content>
+  </SelectPrimitive.Portal>
+),
 );
 
 SelectContent.displayName = SelectPrimitive.Content.displayName;

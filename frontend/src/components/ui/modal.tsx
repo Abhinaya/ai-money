@@ -2,7 +2,7 @@ import React from 'react';
 
 const styles = {
     dialog: {
-        position: 'fixed' as 'fixed',
+        position: 'fixed' as const,
         top: 0,
         left: 0,
         width: '100%',
@@ -13,7 +13,7 @@ const styles = {
         zIndex: 1000,
     },
     dialogOverlay: {
-        position: 'absolute' as 'absolute',
+        position: 'absolute' as const,
         top: 0,
         left: 0,
         width: '100%',
@@ -21,7 +21,7 @@ const styles = {
         backgroundColor: 'rgba(0, 0, 0, 0.5)',
     },
     dialogContent: {
-        position: 'relative' as 'relative',
+        position: 'relative' as const,
         backgroundColor: '#fff',
         padding: '20px',
         borderRadius: '8px',
@@ -40,7 +40,7 @@ const styles = {
     },
     dialogFooter: {
         marginTop: '10px',
-        textAlign: 'right' as 'right',
+        textAlign: 'right' as const,
     },
 };
 

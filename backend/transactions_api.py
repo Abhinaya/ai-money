@@ -44,3 +44,8 @@ async def upload_file(file: UploadFile):
         return {"beancount_filepath": beancount_filepath, 'categories': CATEGORIES, 'transactions': build_transaction_dicts(transactions), "message": f"File uploaded successfully as {filename}"}
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+@router.get("/health")
+async def healthcheck():
+    return {"status": "ok"}
+
