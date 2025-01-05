@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import TransactionsPage from "@/components/TransactionList";
+import ExpenseCalendar from "@/components/CalendarView"
 
 export function TransactionFlowClient() {
   const [isMounted, setIsMounted] = useState(false);
@@ -251,7 +252,7 @@ export function TransactionFlowClient() {
               </DialogFooter>
             </DialogContent>
           </Modal>
-          <TransactionsPage categories={categories} transactions={transactions || []} />
+          <ExpenseCalendar categories={categories} expenses={transactions || []} />
         </div>
       )}
     </div>
