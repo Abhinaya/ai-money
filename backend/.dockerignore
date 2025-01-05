@@ -1,1 +1,10 @@
-.venv
+.DS_Store
+.idea/
+.ipynb_checkpoints/
+.env
+.python-version
+
+__pycache__/
+.venv/
+paisa*
+transactions.beancount
