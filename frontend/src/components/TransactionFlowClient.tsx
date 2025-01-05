@@ -14,6 +14,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import TransactionsPage from "@/components/TransactionList";
+import { getBaseHttpUrl } from "@/utils/api";
 
 export function TransactionFlowClient() {
   const [isMounted, setIsMounted] = useState(false);
@@ -47,7 +48,8 @@ export function TransactionFlowClient() {
     formData.append("file", file);
 
     try {
-      const response = await fetch("http://localhost:8000/api/upload", {
+      const baseUrl = await getBaseHttpUrl();
+      const response = await fetch(`${baseUrl}/api/upload`, {
         method: "POST",
         body: formData,
       });

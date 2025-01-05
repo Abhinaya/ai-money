@@ -90,7 +90,9 @@ export default function TransactionsPage({ transactions, categories }: { transac
                 beginAtZero: true,
                 grace: '7%',
                 ticks: {
-                    callback: (value: number) => `$${value}`,
+                    callback: function (tickValue: number | string) {
+                        return `$${tickValue}`;
+                    },
                 },
             },
         },

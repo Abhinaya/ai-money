@@ -1,4 +1,5 @@
 import { useState, useCallback } from "react";
+import { getBaseWsUrl } from "@/utils/api";
 
 export type TransactionForFeedback = {
   id: string;
@@ -50,8 +51,9 @@ export function useAgentWorkflow() {
   const [error, setError] = useState<string | null>(null);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
 
-  const initializeConnection = useCallback((beancount_filepath: string) => {
-    const ws = new WebSocket(`ws://localhost:8000/ws/workflow?beancount_filepath=${encodeURIComponent(beancount_filepath)}`);
+  const initializeConnection = useCallback(async (beancount_filepath: string) => {
+    const baseUrl = await getBaseWsUrl();
+    const ws = new WebSocket(`${baseUrl}/ws/workflow?beancount_filepath=${encodeURIComponent(beancount_filepath)}`);
 
     ws.onopen = () => {
       setIsConnected(true);

@@ -79,10 +79,10 @@ And visit localhost:3000
 
 ```bash
 # Build the Docker image
-docker build -t ai-money-frontend .
+docker build -t ai-money/frontend .
 
 # Run the container
-docker run -p 3000:3000 ai-money-frontend
+docker run -p 3000:3000 -e BACKEND_HOST=localhost:8000 ai-money/frontend
 ```
 
 ### AWS Deployment
