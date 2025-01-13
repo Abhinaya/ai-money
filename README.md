@@ -47,12 +47,12 @@ ANTHROPIC_API_KEY=<your_key> poetry run uvicorn app:app --reload
 
 Build the Docker image:
 ```bash
-docker build -t ai-money-backend .
+docker build -t ai-money/backend .
 ```
 
 Test locally:
 ```bash
-docker run -p 8000:8000 -e ANTHROPIC_API_KEY=your_key ai-money-backend
+docker run -p 8000:8000 -e ANTHROPIC_API_KEY=your_key ai-money/backend
 ```
 
 ### AWS Deployment
@@ -60,6 +60,7 @@ docker run -p 8000:8000 -e ANTHROPIC_API_KEY=your_key ai-money-backend
 ```
 docker build --platform=linux/amd64 -t ai-money/backend:`git log -n 1 --format="%H"` .
 docker tag ai-money/backend:`git log -n 1 --format="%H"` 867344451303.dkr.ecr.us-west-2.amazonaws.com/ai-money/backend:`git log -n 1 --format="%H"`
+aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 867344451303.dkr.ecr.us-west-2.amazonaws.com
 docker push 867344451303.dkr.ecr.us-west-2.amazonaws.com/ai-money/backend:`git log -n 1 --format="%H"`
 ```
 
@@ -90,6 +91,7 @@ docker run -p 3000:3000 -e BACKEND_HOST=localhost:8000 ai-money/frontend
 ```
 docker build --platform=linux/amd64 -t ai-money/frontend:`git log -n 1 --format="%H"` .
 docker tag ai-money/frontend:`git log -n 1 --format="%H"`  867344451303.dkr.ecr.us-west-2.amazonaws.com/ai-money/frontend:`git log -n 1 --format="%H"`
+aws ecr get-login-password --region us-west-2 | docker login --username AWS --password-stdin 867344451303.dkr.ecr.us-west-2.amazonaws.com
 docker push 867344451303.dkr.ecr.us-west-2.amazonaws.com/ai-money/frontend:`git log -n 1 --format="%H"`
 ```
 
