@@ -13,7 +13,6 @@ jobs:
       - image: cimg/base:2021.04
     steps:
       - checkout
-      - run: cd frontend
       - setup_remote_docker
       - aws-ecr/build_and_push_image:
           auth:
@@ -21,6 +20,7 @@ jobs:
           checkout: false
           repo: ai-money/frontend
           tag: ${CIRCLE_SHA1}
+          workspace_root: frontend
 
   deploy-to-aws:
     docker:
