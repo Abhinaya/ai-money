@@ -4,23 +4,22 @@ version: 2.1
 
 orbs:
   docker: circleci/docker@2
-  aws-ecr: circleci/aws-ecr@8
-  aws-ecs: circleci/aws-ecs@3
+  aws-cli: circleci/aws-cli@5.2.0
+  aws-ecr: circleci/aws-ecr@9.3.7
+  aws-ecs: circleci/aws-ecs@6.0.2
 
 jobs:
-  build-and-push-images:
+  build_and_push_images:
     docker:
       - image: cimg/docker:24.0
     steps:
       - checkout
       - setup_remote_docker
-      - aws-ecr/build-and-push-image:
+      - aws-ecr/build_and_push_image:
+          auth:
+            - aws-cli/setup
           repo: ${ECR_REPO_FRONTEND}
           path: ./frontend
-          tag: ${CIRCLE_TAG}
-      - aws-ecr/build-and-push-image:
-          repo: ${ECR_REPO_BACKEND}
-          path: ./backend
           tag: ${CIRCLE_TAG}
 
   deploy-to-aws:
@@ -28,46 +27,16 @@ jobs:
       - image: cimg/python:3.10
     steps:
       - checkout
-      - aws-ecs/update-task-definition:
-          family: "${ECS_FRONTEND_SERVICE}"
-          container-image-name-updates: "container=${ECS_FRONTEND_CONTAINER},image=${ECR_REPO_FRONTEND}:${CIRCLE_TAG}"
-          execution-role-arn: "${ECS_EXECUTION_ROLE_ARN}"
-          network-mode: "awsvpc"
-          requires-compatibilities: "FARGATE"
-          cpu: "256"
-          memory: "512"
-          task-definition-path: frontend/task-definition.json
-      
-      - aws-ecs/update-task-definition:
-          family: "${ECS_BACKEND_SERVICE}"
-          container-image-name-updates: "container=${ECS_BACKEND_CONTAINER},image=${ECR_REPO_BACKEND}:${CIRCLE_TAG}"
-          execution-role-arn: "${ECS_EXECUTION_ROLE_ARN}"
-          network-mode: "awsvpc"
-          requires-compatibilities: "FARGATE"
-          cpu: "256"
-          memory: "512"
-          task-definition-path: backend/task-definition.json
+      - aws-ecs/update_task_definition_from_json:
+          task_definition_json: frontend/task-definition.json
+          
 
-      - aws-ecs/deploy-service-update:
-          cluster: "${ECS_CLUSTER_NAME}"
-          service-name: "${ECS_FRONTEND_SERVICE}"
-          family: "${ECS_FRONTEND_SERVICE}"
-          force-new-deployment: true
-          deployment-controller: "ECS"
-          network-configuration: '{"awsvpcConfiguration":{"subnets":["${SUBNET_1}","${SUBNET_2}"],"securityGroups":["${SECURITY_GROUP}"],"assignPublicIp":"ENABLED"}}'
-
-      - aws-ecs/deploy-service-update:
-          cluster: "${ECS_CLUSTER_NAME}"
-          service-name: "${ECS_BACKEND_SERVICE}"
-          family: "${ECS_BACKEND_SERVICE}"
-          force-new-deployment: true
-          deployment-controller: "ECS"
-          network-configuration: '{"awsvpcConfiguration":{"subnets":["${SUBNET_1}","${SUBNET_2}"],"securityGroups":["${SECURITY_GROUP}"],"assignPublicIp":"ENABLED"}}'
+    
 
 workflows:
   release-deploy:
     jobs:
-      - build-and-push-images:
+      - build_and_push_images:
           filters:
             branches:
               ignore: /.*/
@@ -75,7 +44,7 @@ workflows:
               only: /^v.*/
       - deploy-to-aws:
           requires:
-            - build-and-push-images
+            - build_and_push_images
           filters:
             branches:
               ignore: /.*/
