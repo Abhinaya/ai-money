@@ -47,9 +47,9 @@ workflows:
             - build_and_push_images
           filters:
             branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+              only: /^circleci-project-setup$/
+            # tags:
+            #   only: /^v.*/
 
 # To create a release and trigger deployment:
 # git tag v1.0.0
