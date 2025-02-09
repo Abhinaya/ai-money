@@ -13,6 +13,7 @@ jobs:
       - image: cimg/base:2021.04
     steps:
       - checkout
+      - setup_remote_docker
       - aws-ecr/build_and_push_image:
           auth:
             - aws-cli/setup
