@@ -3,7 +3,6 @@
 version: 2.1
 
 orbs:
-  docker: circleci/docker@2
   aws-cli: circleci/aws-cli@5.2.0
   aws-ecr: circleci/aws-ecr@9.3.7
   aws-ecs: circleci/aws-ecs@6.0.2
@@ -11,7 +10,7 @@ orbs:
 jobs:
   build_and_push_images:
     docker:
-      - image: cimg/docker:current
+      - image: cimg/base:2021.04
     steps:
       - checkout
       - aws-ecr/build_and_push_image:
