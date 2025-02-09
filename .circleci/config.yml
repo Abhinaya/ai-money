@@ -9,6 +9,7 @@ orbs:
 
 jobs:
   build_and_push_images:
+    working_directory: ~/project/frontend
     docker:
       - image: cimg/base:2021.04
     steps:
@@ -18,7 +19,6 @@ jobs:
           auth:
             - aws-cli/setup
           repo: ai-money/frontend
-          path: ./frontend
           tag: ${CIRCLE_SHA1}
 
   deploy-to-aws:
