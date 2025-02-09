@@ -17,7 +17,7 @@ jobs:
       - aws-ecr/build_and_push_image:
           auth:
             - aws-cli/setup
-          repo: ${ECR_REPO_FRONTEND}
+          repo: ai-money/frontend
           path: ./frontend
           tag: ${CIRCLE_SHA1}
 
