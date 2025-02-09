@@ -11,10 +11,9 @@ orbs:
 jobs:
   build_and_push_images:
     docker:
-      - image: cimg/docker:24.0
+      - image: cimg/docker:current
     steps:
       - checkout
-      - setup_remote_docker
       - aws-ecr/build_and_push_image:
           auth:
             - aws-cli/setup
