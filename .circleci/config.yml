@@ -45,9 +45,9 @@ workflows:
       - deploy-to-aws:
           requires:
             - build_and_push_images
-          filters:
-            branches:
-              only: /^circleci-project-setup$/
+          # filters:
+          #   branches:
+          #     only: /^circleci-project-setup$/
             # tags:
             #   only: /^v.*/
 
