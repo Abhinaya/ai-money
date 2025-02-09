@@ -36,12 +36,12 @@ jobs:
 workflows:
   release-deploy:
     jobs:
-      - build_and_push_images:
-          filters:
-            branches:
-              ignore: /.*/
-            tags:
-              only: /^v.*/
+      - build_and_push_images
+          # filters:
+          #   branches:
+          #     ignore: /.*/
+          #   tags:
+          #     only: /^v.*/
       - deploy-to-aws:
           requires:
             - build_and_push_images
