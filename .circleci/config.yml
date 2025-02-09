@@ -17,10 +17,9 @@ jobs:
       - aws-ecr/build_and_push_image:
           auth:
             - aws-cli/setup
-          checkout: false
           repo: ai-money/frontend
+          path: ./frontend
           tag: ${CIRCLE_SHA1}
-          workspace_root: frontend
 
   deploy-to-aws:
     docker:
