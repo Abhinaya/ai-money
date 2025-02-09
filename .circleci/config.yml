@@ -19,7 +19,7 @@ jobs:
             - aws-cli/setup
           repo: ${ECR_REPO_FRONTEND}
           path: ./frontend
-          tag: ${CIRCLE_TAG}
+          tag: ${CIRCLE_SHA1}
 
   deploy-to-aws:
     docker:
