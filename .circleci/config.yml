@@ -19,7 +19,7 @@ jobs:
             - aws-cli/setup
           repo: ai-money/frontend
           path: ./frontend
-          build-path: frontend
+          build_path: frontend
           tag: ${CIRCLE_SHA1}
 
   deploy-to-aws:
