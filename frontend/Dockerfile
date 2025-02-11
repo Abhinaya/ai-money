@@ -22,7 +22,6 @@ COPY package*.json ./
 RUN npm ci --only=production && mkdir -p public
 
 COPY --from=builder /app/.next ./.next
-RUN ls /app/public
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/next.config.ts ./
 
