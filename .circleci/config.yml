@@ -27,11 +27,10 @@ jobs:
       - image: cimg/python:3.10
     steps:
       - checkout
+      - aws-cli/setup
       - aws-ecs/update_task_definition_from_json:
+          region: ${AWS_DEFAULT_REGION}
           task_definition_json: frontend/task-definition.json
-          
-
-    
 
 workflows:
   release-deploy:
