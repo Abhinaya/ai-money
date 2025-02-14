@@ -3,7 +3,7 @@
     "containerDefinitions": [
         {
             "name": "ai-money-backend",
-            "image": "867344451303.dkr.ecr.us-west-2.amazonaws.com/ai-money/backend:07b3acf1b7f7991fd5610374370eafc9a3a820cf",
+            "image": "${ECR_REPO_BACKEND}:latest",
             "cpu": 0,
             "portMappings": [
                 {
