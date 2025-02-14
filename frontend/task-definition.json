@@ -20,8 +20,6 @@
                     "value": "ai-money-alb-1795958966.us-west-2.elb.amazonaws.com/api"
                 }
             ],
-            "mountPoints": [],
-            "volumesFrom": [],
             "logConfiguration": {
                 "logDriver": "awslogs",
                 "options": {
@@ -32,20 +30,16 @@
                     "awslogs-region": "us-west-2",
                     "awslogs-stream-prefix": "ecs"
                 }
-            },
-            "systemControls": []
+            }
         }
     ],
     "family": "ai-money-frontend",
     "executionRoleArn": "arn:aws:iam::867344451303:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
-    "volumes": [],
-    "placementConstraints": [],
     "cpu": "1024",
     "memory": "3072",
     "runtimePlatform": {
         "cpuArchitecture": "X86_64",
         "operatingSystemFamily": "LINUX"
-    },
-    "tags": []
+    }
 }
