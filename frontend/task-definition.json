@@ -2,7 +2,7 @@
     "containerDefinitions": [
         {
             "name": "ai-money-frontend",
-            "image": "${ECR_REPO_FRONTEND}:latest",
+            "image": "ai-money/frontend:latest",
             "cpu": 0,
             "portMappings": [
                 {
