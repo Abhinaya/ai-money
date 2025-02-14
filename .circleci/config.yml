@@ -31,12 +31,13 @@ jobs:
       - aws-ecs/update_task_definition_from_json:
           region: ${AWS_DEFAULT_REGION}
           task_definition_json: frontend/task-definition.json
-          container_image_name_updates: 'container=ai-money-frontend,tag=${CIRCLE_SHA1}'
-      - aws-ecs/deploy-service-update:
+      - aws-ecs/update_service:
           cluster: DevCluster
-          service-name: ai-money-frontend
+          region: ${AWS_DEFAULT_REGION}
+          container_image_name_updates: 'container=ai-money-frontend,tag=${CIRCLE_SHA1}'
+          service_name: ai-money-frontend
           family: ai-money-frontend
-          force-new-deployment: true
+          force_new_deployment: true
 
 workflows:
   release-deploy:
