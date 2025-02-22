@@ -2,7 +2,7 @@
     "containerDefinitions": [
         {
             "name": "ai-money-frontend",
-            "image": "ai-money/frontend:latest",
+            "image": "867344451303.dkr.ecr.us-west-2.amazonaws.com/ai-money/frontend:latest",
             "cpu": 0,
             "portMappings": [
                 {
@@ -36,6 +36,38 @@
     "family": "ai-money-frontend",
     "executionRoleArn": "arn:aws:iam::867344451303:role/ecsTaskExecutionRole",
     "networkMode": "awsvpc",
+    "requiresCompatibilities": [
+        "FARGATE"
+    ],
+    "requiresAttributes": [
+        {
+            "name": "com.amazonaws.ecs.capability.logging-driver.awslogs"
+        },
+        {
+            "name": "ecs.capability.execution-role-awslogs"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.ecr-auth"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.19"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.28"
+        },
+        {
+            "name": "ecs.capability.execution-role-ecr-pull"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.18"
+        },
+        {
+            "name": "ecs.capability.task-eni"
+        },
+        {
+            "name": "com.amazonaws.ecs.capability.docker-remote-api.1.29"
+        }
+    ],
     "cpu": "1024",
     "memory": "3072",
     "runtimePlatform": {
