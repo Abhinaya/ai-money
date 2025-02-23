@@ -15,14 +15,24 @@ jobs:
       - checkout
       - setup_remote_docker
       - aws-ecr/build_and_push_image:
+          name: "Frontend: Push images"
           auth:
             - aws-cli/setup
           repo: ai-money/frontend
           path: ./frontend
           build_path: frontend
           tag: ${CIRCLE_SHA1}
+      - aws-ecr/build_and_push_image:
+          name: "Backend: Push images"
+          auth:
+            - aws-cli/setup
+          repo: ai-money/backend
+          path: ./backend
+          build_path: backend
+          tag: ${CIRCLE_SHA1}
 
-  deploy-to-aws:
+
+  frontend-deploy-to-aws:
     docker:
       - image: cimg/python:3.10
     steps:
@@ -32,11 +42,29 @@ jobs:
           region: ${AWS_DEFAULT_REGION}
           task_definition_json: frontend/task-definition.json
       - aws-ecs/update_service:
+          name: "Frontend: Update service"
           cluster: DevCluster
           region: ${AWS_DEFAULT_REGION}
           container_image_name_updates: 'container=ai-money-frontend,tag=${CIRCLE_SHA1}'
           service_name: ai-money-frontend
           family: ai-money-frontend
+          force_new_deployment: true
+  backend-deploy-to-aws:
+    docker:
+      - image: cimg/python:3.10
+    steps:
+      - checkout
+      - aws-cli/setup
+      - aws-ecs/update_task_definition_from_json:
+          region: ${AWS_DEFAULT_REGION}
+          task_definition_json: backend/task-definition.json
+      - aws-ecs/update_service:
+          name: "Backend: Update service"
+          cluster: DevCluster
+          region: ${AWS_DEFAULT_REGION}
+          container_image_name_updates: 'container=ai-money-backend,tag=${CIRCLE_SHA1}'
+          service_name: ai-money-backend
+          family: ai-money-backend
           force_new_deployment: true
 
 workflows:
@@ -48,9 +76,12 @@ workflows:
           #     ignore: /.*/
           #   tags:
           #     only: /^v.*/
-      - deploy-to-aws:
+      - frontend-deploy-to-aws:
           requires:
-            - build_and_push_images
+            - deploy-to-aws
+      - backend-deploy-to-aws:
+          requires:
+            - deploy-to-aws
           # filters:
           #   branches:
           #     only: /^circleci-project-setup$/
