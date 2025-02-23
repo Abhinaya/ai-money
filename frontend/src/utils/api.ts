@@ -22,9 +22,10 @@ async function getBaseUrl(): Promise<string> {
 }
 
 export async function getBaseHttpUrl(): Promise<string> {
-    return "http://" + await getBaseUrl();
+    return `${window.location.protocol}//${await getBaseUrl()}`;
 }
 
 export async function getBaseWsUrl(): Promise<string> {
-    return "ws://" + await getBaseUrl();
+    const wsProtocol = window.location.protocol === "https:" ? "wss:" : "ws:";
+    return `${wsProtocol}//${await getBaseUrl()}`;
 }
