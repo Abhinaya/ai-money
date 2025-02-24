@@ -60,6 +60,16 @@ export function useAgentWorkflow() {
       setSocket(ws);
     };
 
+    ws.send(
+      JSON.stringify({
+        type: "HANDSHAKE",
+        headers: {
+          "Sec-WebSocket-Key": btoa("random_string"),
+          "Sec-WebSocket-Version": "13"
+        },
+      })
+    );
+
     ws.onmessage = (event) => {
       const message = JSON.parse(event.data);
 
