@@ -17,7 +17,7 @@ class CurrencyConversionResponse(BaseModel):
     amount: int
     currency: str
 
-@router.post("/api/convert-currency", response_model=CurrencyConversionResponse)
+@router.post("/convert-currency", response_model=CurrencyConversionResponse)
 async def convert_currency(request: CurrencyConversionRequest):
 
     if request.from_currency.upper() != "USD" or request.to_currency.upper() != "INR":
