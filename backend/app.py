@@ -4,6 +4,7 @@ from typing import Callable, Awaitable
 
 from uiflow import router as flow_router
 from transactions_api import router as transactions_router
+from convert_currency_api import router as convert_router
 
 app = FastAPI()
 
@@ -19,6 +20,7 @@ async def rewrite_api_path(request: Request, call_next: Callable[[Request], Awai
 
 app.include_router(flow_router)
 app.include_router(transactions_router)
+app.include_router(convert_router)
 
 app.add_middleware(
     CORSMiddleware,
